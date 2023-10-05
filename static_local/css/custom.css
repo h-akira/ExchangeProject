@@ -1,0 +1,49 @@
+/* navbarの背景色とテキストカラー */
+.navbar, .navbar-menu {
+    background-color: #363636 !important; /* 背景色を#333（暗灰色）に設定 */
+    color: white !important; /* テキストカラーを白に設定 */
+}
+
+/* navbarのアイテムのテキストカラーとホバー時の背景色 */
+.navbar-item {
+    color: white !important;
+}
+
+.navbar-item:hover {
+    background-color: #4a4a4a !important; /* ホバー時の背景色を少し明るい灰色に設定 */
+}
+
+/* .card-bordered { */
+  /* border: 1px solid #2b2b2b; */
+/* } */
+
+.padding-top-10 {
+  padding-top: 10px;
+}
+
+.padding-bottom-10 {
+  padding-bottom: 10px;
+}
+
+.padding-side {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.padding-all {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+/* .bg-white { */
+/*   background-color:white */
+/* } */
+
+/* .a-white { */
+/*   color: white; */
+/*   text-decoration: underline; */
+/*   text-decoration-color: white; */
+/* } */
+
