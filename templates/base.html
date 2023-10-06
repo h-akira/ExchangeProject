@@ -29,6 +29,7 @@
       <div id="navbarBasicExample" class="navbar-menu">
         <div class="navbar-start">
           <a class="navbar-item" href="{% url 'home:index' %}">ホーム</a>
+          <a class="navbar-item" href="{% url 'diary:index' %}">カレンダー</a>
         </div>
         <div class="navbar-end">
           {% if user.is_authenticated %}
@@ -44,7 +45,9 @@
         </div>
       </div>
     </nav>
-		{% block content %}{% endblock content %}
+    <div class="padding-all">
+		  {% block content %}{% endblock content %}
+    </div>
     <!-- Custom JS --> 
     <script src="{% static 'js/menu.js' %}"></script>
     <!-- Extra JS -->
