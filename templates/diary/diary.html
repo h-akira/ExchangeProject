@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}日記{% endblock title %}
+{% block extra_css %}
+{% if option == "edit" %}
+<link rel="stylesheet" href="{% static 'css/textarea.css' %}">
+{% endif %}
+{% endblock extra_css %}
+{% block content %}
+<div class="columns">
+  <div class="column is-two-thirds" id="includeChart">
+    <select id="currencyPairSelect">
+      <option value="USDJPY" selected>USDJPY</option>
+      <option value="EURJPY">EURJPY</option>
+      <option value="EURUSD">EURJPY</option>
+    </select>
+    <select id="timeframeSelect">
+      <option value="1T">1分足</option>
+      <option value="5T">5分足</option>
+      <option value="10T">10分足</option>
+      <option value="15T" selected>15分足</option>
+      <option value="30T">30分足</option>
+      <option value="1H">1時間足</option>
+      <option value="4H">4時間足</option>
+    </select>
+    <div
+      id="container"
+      style="width: 100%; height: 600px"
+     ></div>
+  </div>
+  <div class="column">
+    <h2 class="title is-2 has-text-centered">
+      {% if option == "edit" %}
+      {{ str_date }}（{{ str_weekday }}）
+      {% else %}
+      <a href="{% url 'diary:detail' str_prev_date %}"> << </a>
+      {{ str_date }}（{{ str_weekday }}）
+      <a href="{% url 'diary:detail' str_next_date %}"> >> </a>
+    </h2>
+    {% endif %}
+    </h2>
+    {% if option == "edit" %}
+    {% if type == "create" %}
+    <form class="" action="{% url 'diary:create' str_date %}" method="post">
+    {% elif type == "update" %}
+    <form class="" action="{% url 'diary:update' str_date %}" method="post">
+    {% else %}
+    <form class="" action="{% url 'diary:update' str_date %}" method="post">
+    {% endif %}
+      {% csrf_token %}
+      <div class="padding-bottom-10">
+        <div class="temporary-height">{{ form.text }}</div>
+      </div>
+      {% if type == "create" %}
+      <button type="submit" class="button is-link is-outlined">登録</button>
+      {% elif type == "update" %}
+      <button type="submit" class="button is-link is-outlined">更新</button>
+      <a href="{% url 'diary:delete' str_date %}" class="button is-danger is-outlined">削除</a>
+      {% else %}
+      <button type="submit" class="button is-link is-outlined">登録</button>
+      {% endif %}
+    </form>
+    {% else %}
+    {# <div class="card"> #}
+    <div class="card card-bordered">
+      <div class="card-content">
+        <h4 class="title is-4 has-text-centered">日記</h4>
+        {% if obj == None %}
+        <div class="padding-bottom-10">存在しません．</div>
+        <a href="{% url 'diary:detail' str_date "edit" %}" class="button is-link is-outlined">作成</a>
+        {% else %}
+        <div class="padding-all">{{ obj.text|linebreaks }}</div>
+        <a href="{% url 'diary:detail' str_date "edit" %}" class="button is-link is-outlined">編集</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}
+{% block extra_js %}
+<script
+    type="text/javascript"
+    src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"
+></script>
+<script>
+  let FETCH_URL_DATA = "/api/get_data_by_date/{{ str_date }}/USDJPY/15T/";
+  let STR_DATE = "{{ str_date }}";
+</script>
+<script src="{% static 'js/tradingView.js' %}"></script>
+{% if option == "edit" %}
+<script src="{% static 'js/textarea.js' %}"></script>
+{% endif %}
+{% endblock extra_js %}

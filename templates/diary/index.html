@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+{% endblock extra_css %}
+
+{% block title %}ホーム{% endblock title %}
+{% block content %}
+<h1 class="title is-1 padding-all">カレンダー</h1>
+<div id='calendar'></div>
+{% endblock content %}
+
+{% block extra_js %}
+{# <!-- <script src="{% static 'mdeditor/js/lib/sequence-diagram.min.js' %}"></script> --> #}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      events: '/diary/events_json/',  // Djangoのエンドポイントを指定
+      eventClick: function(info) {
+        // イベントをクリックしたときの動作（例：イベントの詳細を表示するなど）
+        alert(info.event.title + "\n" + info.event.description);
+      },
+      dateClick: function(info) {
+        var diaryURL = "/diary/detail/" + info.dateStr;
+        window.location.href = diaryURL;
+      }
+    });
+    calendar.render();
+  });
+</script>
+{% endblock extra_js %}
+
