@@ -105,16 +105,19 @@ def main():
       date_range=date_range
     ) 
     dict_list = [{'dt': index, **row.to_dict()} for index, row in df.iterrows()]
+    obj_list = []
     for d in dict_list:
       d["pair"]=pair
       obj = ExchangeDataTable(**d)
-      try:
-        obj.save()
-        if d["dt"].hour == 7 and d["dt"].minute == 0:
-          print(f"{d['dt'].date()}の{d['pair']}を保存しました．")
-      except django.db.utils.IntegrityError:
-        if d["dt"].hour == 7 and d["dt"].minute == 0:
-          print(f"{d['dt'].date()}の{d['pair']}は既に存在します．")
+      obj_list.append(obj)
+      # try:
+      #   obj.save()
+      #   if d["dt"].hour == 7 and d["dt"].minute == 0:
+      #     print(f"{d['dt'].date()}の{d['pair']}を保存しました．")
+      # except django.db.utils.IntegrityError:
+      #   if d["dt"].hour == 7 and d["dt"].minute == 0:
+      #     print(f"{d['dt'].date()}の{d['pair']}は既に存在します．")
+    ExchangeDataTable.objects.bulk_create(obj_list, ignore_conflicts=True)
 
 if __name__ == '__main__':
   main()
