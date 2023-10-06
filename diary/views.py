@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from django.http import JsonResponse
-from .models import EventTable, DiaryTable
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 import datetime
+from .models import EventTable, DiaryTable
+from .forms import DiaryForm
 
 # GPT先生に考えてもらった色
 COLOR = {
@@ -28,7 +30,7 @@ WEEK = ("月","火","水","木","金","土","日")
 class IndexView(generic.TemplateView):
   template_name = 'diary/index.html'
 
-def detail(request,date):
+def detail(request,date,option=None):
   str_date = date
   date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
   prev_date = date - datetime.timedelta(days=1)
@@ -45,8 +47,51 @@ def detail(request,date):
     "str_prev_date":str_prev_date,
     "str_next_date":str_next_date,
     "str_weekday":WEEK[date.weekday()],
+    "option":option,
+    "form":None,
+    "type":None
   }
+  if option == "edit":
+    if obj == None:
+      form = DiaryForm()
+      context["type"] = "create"
+    else:
+      form = DiaryForm(instance=obj)
+      context["type"] = "update"
+    context["form"] = form
   return render(request, 'diary/diary.html', context)
+
+@login_required
+def create(request, date):
+  str_date = date
+  date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+  if request.method == 'POST':
+    form = DiaryForm(request.POST)
+    if form.is_valid():
+      instance = form.save(commit=False)  # まだDBには保存しない
+      instance.date = date # 日付をセット
+      instance.user = request.user  # userをセット
+      instance.save()  # DBに保存
+    return redirect("diary:detail", str_date)
+
+@login_required
+def update(request, date):
+  str_date = date
+  date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+  obj = DiaryTable.objects.get(user=request.user, date=date)
+  if request.method == 'POST':
+    form = DiaryForm(request.POST, instance=obj)
+    if form.is_valid():
+      form.save()
+    return redirect("diary:detail", str_date)
+
+@login_required
+def delete(request, date):
+  str_date = date
+  date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+  obj = DiaryTable.objects.get(user=request.user, date=date)
+  obj.delete()
+  return redirect("diary:index")
 
 def events_json(request):
   if request.user.is_authenticated:

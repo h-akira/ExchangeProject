@@ -1,0 +1,6 @@
+.dynamic-textarea {
+  width: 100%;
+  min-height: 400px;
+  overflow-y: hidden;
+  resize: none;
+}

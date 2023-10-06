@@ -13,9 +13,9 @@
     background-color: #4a4a4a !important; /* ホバー時の背景色を少し明るい灰色に設定 */
 }
 
-/* .card-bordered { */
-  /* border: 1px solid #2b2b2b; */
-/* } */
+.card-bordered {
+  border: 1px solid #2b2b2b;
+}
 
 .padding-top-10 {
   padding-top: 10px;
