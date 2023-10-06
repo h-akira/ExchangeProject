@@ -1,41 +1,49 @@
 import os
 import sys
 import datetime
+import pytz
 import pandas as pd
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from .models import ExchangeDataTable
 # 独自関数
 import FX.chart
 
 # @login_required
 def get_data_by_date(request, date, pair, rule):
   date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+  end_datetime = datetime.datetime.combine(date, datetime.time(21,0))
+  end_datetime = pytz.utc.localize(end_datetime)
   if "H" in rule:
     days = 60
   elif "D" in rule:
     days = 250
   else:
     days = 10
-  date_range = (
-    date - datetime.timedelta(days=days),
-    date + datetime.timedelta(days=1),
-  )
-  data = get_dic(pair, rule, date_range)
+  start_datetime = end_datetime - datetime.timedelta(days=days)
+  data = get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime)
   return JsonResponse(data, safe=False)
 
 ##############################
 ########## Function ##########
 ##############################
-def get_dic(pair, rule, date_range, sma1=5, sma2=20, sma3=60, end_datetime=None):
-  df = FX.chart.GMO_dir2DataFrame(
-    os.path.join(os.path.dirname(__file__), "../data/rate"), 
-    pair=pair,
-    date_range=date_range
-  ) 
-  if end_datetime != None:
-    df = df[df.index <= end_datetime]
+def get_dic(pair, rule, sma1=5, sma2=20, sma3=60, start_datetime=None, end_datetime=None):
+  if start_datetime == None and end_datetime == None:
+    Rate = ExchangeDataTable.objects.filter(pair=pair)
+  elif start_datetime == None:
+    Rate = ExchangeDataTable.objects.filter(pair=pair, dt__lt=end_datetime)
+  elif end_datetime == None:
+    Rate = ExchangeDataTable.objects.filter(pair=pair, dt__gte=start_datetime)
+  else:
+    Rate = ExchangeDataTable.objects.filter(pair=pair, dt__gte=start_datetime, dt__lt=end_datetime)
+  Rate = Rate.order_by("dt")
+  df = pd.DataFrame.from_records(Rate.values())
+  df['dt'] = pd.to_datetime(df['dt'])
+  df['dt'] = df['dt'].dt.tz_convert('Asia/Tokyo')
+  df = df.drop(columns=['id', 'pair'])
+  df.set_index('dt', inplace=True)
   df = FX.chart.resample(df, rule)
   df = FX.chart.add_BBands(
     df,20,2,0,name={"up":"bb_up_2", "middle":"bb_middle", "down":"bb_down_2"}
