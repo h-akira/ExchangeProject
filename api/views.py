@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import ExchangeDataTable
 # 独自関数
+import chart.chart
 import FX.chart
 
 # @login_required
@@ -44,16 +45,16 @@ def get_dic(pair, rule, sma1=5, sma2=20, sma3=60, start_datetime=None, end_datet
   df['dt'] = df['dt'].dt.tz_convert('Asia/Tokyo')
   df = df.drop(columns=['id', 'pair'])
   df.set_index('dt', inplace=True)
-  df = FX.chart.resample(df, rule)
-  df = FX.chart.add_BBands(
+  df = chart.chart.resample(df, rule)
+  df = chart.chart.add_BBands(
     df,20,2,0,name={"up":"bb_up_2", "middle":"bb_middle", "down":"bb_down_2"}
   )
-  df = FX.chart.add_BBands(
+  df = chart.chart.add_BBands(
     df,20,3,0,name={"up":"bb_up_3", "middle":"bb_middle", "down":"bb_down_3"}
   )
-  df = FX.chart.add_SMA(df, sma1, "SMA1")
-  df = FX.chart.add_SMA(df, sma2, "SMA2") 
-  df = FX.chart.add_SMA(df, sma3, "SMA3")
+  df = chart.chart.add_SMA(df, sma1, "SMA1")
+  df = chart.chart.add_SMA(df, sma2, "SMA2") 
+  df = chart.chart.add_SMA(df, sma3, "SMA3")
   df = df.dropna() 
   data = []
   for index, row in df.iterrows():
