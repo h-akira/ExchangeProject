@@ -10,7 +10,6 @@ from django.contrib.auth.decorators import login_required
 from .models import ExchangeDataTable
 # 独自関数
 import chart.chart
-import FX.chart
 
 # @login_required
 def get_data_by_date(request, date, pair, rule):
