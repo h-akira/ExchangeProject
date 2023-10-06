@@ -30,6 +30,7 @@ WEEK = ("月","火","水","木","金","土","日")
 class IndexView(generic.TemplateView):
   template_name = 'diary/index.html'
 
+@login_required
 def detail(request,date,option=None):
   str_date = date
   date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
