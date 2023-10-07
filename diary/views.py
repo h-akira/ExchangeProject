@@ -110,7 +110,7 @@ def delete(request, date):
   date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
   obj = DiaryTable.objects.get(user=request.user, date=date)
   obj.delete()
-  return redirect("diary:index")
+  return redirect("diary:detail", str_date)
 
 def events_json(request):
   if request.user.is_authenticated:
