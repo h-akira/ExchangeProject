@@ -127,7 +127,7 @@ def events_json(request):
     event_list.append(
       {
         'id': e.id,
-        'title': f"【{dic[e.country]}】{e.title}",
+        'title': f"【{dic[e.country]}{e.importance}】{e.name}",
         'start':start,
         'end':end, 
         'description': e.description,

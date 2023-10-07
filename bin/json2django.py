@@ -26,7 +26,7 @@ def parse_args():
 def main():
   options = parse_args()
   if not opsions.username:
-    if "y" != input("usernameが指定されていませんが構いませんか？(y/other):")
+    if "y" != input("usernameが指定されていませんが構いませんか？(y/other):"):
       sys.exit()
   os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ExchangeProject.settings")
   import django

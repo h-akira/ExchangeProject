@@ -20,14 +20,22 @@ COUNTRY = (
 
 class EventTable(models.Model):
   user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
-  title = models.CharField(max_length=127)
+  name = models.CharField(max_length=127)
   date = models.DateField()
   time = models.TimeField(null=True, blank=True)
   country = models.CharField(max_length=31, choices=COUNTRY)
+  importance = models.IntegerField(null=True, blank=True)
   previous = models.CharField(max_length=63, null=True, blank=True)
   prediction = models.CharField(max_length=63, null=True, blank=True)
   result = models.CharField(max_length=63, null=True, blank=True)
   description = models.TextField(null=True, blank=True)
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(
+        fields=["user", "name", "date", "time", "country"],
+        name="event_unique"
+      )
+    ]
 
 class DiaryTable(models.Model):
   user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
