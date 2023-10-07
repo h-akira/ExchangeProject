@@ -19,6 +19,7 @@ def parse_args():
 GMOクリック証券のヒストリカルデータを利用することを想定している．
 """, formatter_class = argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument("--version", action="version", version='%(prog)s 0.0.1')
+  parser.add_argument("-i", "--input", metavar="directry", help="rateディレクトリ（NoneならBASE_DIR/data/rate）")
   parser.add_argument("-s", "--start", metavar="日付", help="2023-10-06などの形式の日付（Noneなら現在の7日前）")
   parser.add_argument("-p", "--pairs", metavar="pair", nargs="*", default=["USDJPY","EURJPY","EURUSD","GBPJPY", "AUDJPY"], help="通貨ペア")
   # parser.add_argument("-", "--", action="store_true", help="")
@@ -99,9 +100,11 @@ def main():
   else:
     options.start = datetime.datetime.strptime(options.start, "%Y-%m-%d")
   date_range = (options.start.date(), (now + datetime.timedelta(days=1)).date())
+  if not options.input:
+    options.input = os.path.join(settings.BASE_DIR, "data/rate") 
   for pair in options.pairs:
     df = GMO_dir2DataFrame(
-      os.path.join(settings.BASE_DIR, "data/rate"), 
+      dir_name=options.input,
       pair=pair,
       date_range=date_range
     ) 
