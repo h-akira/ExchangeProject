@@ -25,7 +25,7 @@ def parse_args():
 
 def main():
   options = parse_args()
-  if not opsions.username:
+  if not options.username:
     if "y" != input("usernameが指定されていませんが構いませんか？(y/other):"):
       sys.exit()
   os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ExchangeProject.settings")
@@ -36,7 +36,6 @@ def main():
   from accounts.models import CustomUser
   user = CustomUser.objects.get(username=options.username)
   data = json.load(open(options.file, mode="r", encoding=options.encoding))
-  print(data)
   for d in data:
     if d["importance"] < 2:
       continue
