@@ -7,6 +7,17 @@
 {% block title %}ホーム{% endblock title %}
 {% block content %}
 <h1 class="title is-1 padding-all">ホーム</h1>
+<div class="padding-all">
+  <div class="columns">
+    <div class="column">
+      {% include 'home/calendar.html' %}
+    </div> 
+    <div class="column">
+      {% include 'home/JP225.html' %}
+    </div>
+  </div>
+  {% include 'home/USDJPY.html' %}
+</div>
 {% endblock content %}
 
 {% block extra_js %}
