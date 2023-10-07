@@ -9,6 +9,7 @@
 {% block content %}
 <div class="columns">
   <div class="column is-two-thirds" id="includeChart">
+    {% if is_data %}
     <select id="currencyPairSelect">
       <option value="USDJPY" selected>USDJPY</option>
       <option value="EURJPY">EURJPY</option>
@@ -27,6 +28,12 @@
       id="container"
       style="width: 100%; height: 600px"
      ></div>
+    {% else %}
+    <p>
+      ※データがまだ追加されていないため外部のウィジェットを表示します．
+    </p>
+    {% include 'diary/USDJPY15T.html' %}
+    {% endif %}
   </div>
   <div class="column">
     <h2 class="title is-2 has-text-centered">

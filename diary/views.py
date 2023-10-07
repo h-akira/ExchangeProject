@@ -5,9 +5,11 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Max
 import datetime
 from .models import EventTable, DiaryTable
 from .forms import DiaryForm
+from api.models import ExchangeDataTable
 
 # GPT先生に考えてもらった色
 COLOR = {
@@ -60,6 +62,14 @@ def detail(request,date,option=None):
     obj = DiaryTable.objects.get(user=request.user, date=date)
   except DiaryTable.DoesNotExist:
     obj = None
+  # 為替データの最終時刻を取得し，当日のデータがあるのかどうか判断する
+  # UTCで返される
+  latest_date = ExchangeDataTable.objects.aggregate(max_dt=Max('dt'))['max_dt'].date()
+  if latest_date < date:
+    is_data=False
+  else:
+    is_data=True
+  print(is_data)
   context = {
     "obj":obj,
     "str_date":str_date,
@@ -68,7 +78,8 @@ def detail(request,date,option=None):
     "str_weekday":WEEK[date.weekday()],
     "option":option,
     "form":None,
-    "type":None
+    "type":None,
+    "is_data":is_data
   }
   if option == "edit":
     if obj == None:
