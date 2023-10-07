@@ -4,6 +4,7 @@ from django.views import generic
 from django.http import JsonResponse
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 import datetime
 from .models import EventTable, DiaryTable
 from .forms import DiaryForm
@@ -43,8 +44,9 @@ dic = {
 }
 WEEK = ("月","火","水","木","金","土","日")
 
-class IndexView(generic.TemplateView):
+class IndexView(LoginRequiredMixin, generic.TemplateView):
   template_name = 'diary/index.html'
+  login_url = reverse_lazy("login")
 
 @login_required
 def detail(request,date,option=None):

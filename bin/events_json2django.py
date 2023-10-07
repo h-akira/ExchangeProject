@@ -25,16 +25,18 @@ def parse_args():
 
 def main():
   options = parse_args()
-  if not options.username:
-    if "y" != input("usernameが指定されていませんが構いませんか？(y/other):"):
-      sys.exit()
   os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ExchangeProject.settings")
   import django
   django.setup()
   from django.conf import settings
   from diary.models import EventTable
   from accounts.models import CustomUser
-  user = CustomUser.objects.get(username=options.username)
+  if not options.username:
+    if "y" != input("usernameが指定されていませんが構いませんか？(y/other):"):
+      sys.exit()
+    user = None
+  else:
+    user = CustomUser.objects.get(username=options.username)
   data = json.load(open(options.file, mode="r", encoding=options.encoding))
   for d in data:
     if d["importance"] < 2:
