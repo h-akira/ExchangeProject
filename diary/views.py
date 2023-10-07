@@ -25,6 +25,22 @@ COLOR = {
   "Mexico": "#007748",     # メキシコの国旗の緑を使用: 深い緑色
   "Other": "#808080",      # グレー: 他のカテゴリを示すニュートラルな色
 }
+dic = {
+  "Japan": "日",
+  "EU": "欧",
+  "USA": "米",
+  "Germany": "独",
+  "UK": "英",
+  "France": "仏",
+  "Canada": "加",
+  "Australia": "豪",
+  "NewZealand": "新",
+  "Swiss": "瑞",
+  "Turkey": "土",
+  "China": "中",
+  "Mexico": "墨",
+  "Other": "他"
+}
 WEEK = ("月","火","水","木","金","土","日")
 
 class IndexView(generic.TemplateView):
@@ -99,14 +115,26 @@ def events_json(request):
     events = EventTable.objects.filter(Q(user=request.user) | Q(user=None))
   else:
     events = EventTable.objects.filter(user=None)
-  event_list = [
-    {
-      'id': e.id,
-      'title': e.title,
-      'start': e.dt.strftime('%Y-%m-%dT%H:%M:%S'),
-      'description': e.description,
-      'borderColor': COLOR[e.country]
-    }
-    for e in events
-  ]
+  event_list = []
+  for e in events:
+    if e.time:
+      start = datetime.datetime.combine(e.date, e.time).strftime('%Y-%m-%dT%H:%M:%S')
+      # デフォルトでendがstartの一時間後になるようで，日付をまたぐことがあるので
+      end = (datetime.datetime.combine(e.date, e.time)+datetime.timedelta(seconds=1)).strftime('%Y-%m-%dT%H:%M:%S')
+    else:
+      start = e.date.strftime('%Y-%m-%d')
+      end = start
+    event_list.append(
+      {
+        'id': e.id,
+        'title': f"【{dic[e.country]}】{e.title}",
+        'start':start,
+        'end':end, 
+        'description': e.description,
+        'borderColor': COLOR[e.country],
+        'backgroundColor': COLOR[e.country]
+      }
+    )
   return JsonResponse(event_list, safe=False)
+
+
