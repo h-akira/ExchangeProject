@@ -15,12 +15,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 def parse_args():
   import argparse
   parser = argparse.ArgumentParser(description="""\
-データベースに為替のデータを登録する．\
-GMOクリック証券のヒストリカルデータを利用することを想定している．
+データベースに経済カレンダーの情報を追加する．
 """, formatter_class = argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument("--version", action="version", version='%(prog)s 0.0.1')
-  parser.add_argument("-s", "--start", metavar="日付", help="2023-10-06などの形式の日付（Noneなら現在の7日前）")
-  parser.add_argument("-p", "--pairs", metavar="pair", nargs="*", default=["USDJPY","EURJPY","EURUSD","GBPJPY", "AUDJPY"], help="通貨ペア")
+  # parser.add_argument("-s", "--start", metavar="日付", help="2023-10-06などの形式の日付（Noneなら現在の7日前）")
+  # parser.add_argument("-p", "--pairs", metavar="pair", nargs="*", default=["USDJPY","EURJPY","EURUSD","GBPJPY", "AUDJPY"], help="通貨ペア")
   # parser.add_argument("-", "--", action="store_true", help="")
   # parser.add_argument("file", metavar="input-file", help="input file")
   options = parser.parse_args()
@@ -92,7 +91,6 @@ def main():
   django.setup()
   from django.conf import settings
   from api.models import ExchangeDataTable
-
   now = datetime.datetime.now()-datetime.timedelta(hours=6)
   if options.start == None:
     options.start = now - datetime.timedelta(days=7)
