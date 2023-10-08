@@ -69,7 +69,10 @@ def detail(request,date,option=None):
     is_data=False
   else:
     is_data=True
-  print(is_data)
+  if (datetime.datetime.utcnow() + datetime.timedelta(hours=3)).date() < date:
+    future = True
+  else:
+    future = False
   context = {
     "obj":obj,
     "str_date":str_date,
@@ -79,7 +82,8 @@ def detail(request,date,option=None):
     "option":option,
     "form":None,
     "type":None,
-    "is_data":is_data
+    "is_data":is_data,
+    "future":future
   }
   if option == "edit":
     if obj == None:

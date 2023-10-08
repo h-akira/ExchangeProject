@@ -9,7 +9,11 @@
 {% block content %}
 <div class="columns">
   <div class="column is-two-thirds" id="includeChart">
-    {% if is_data %}
+    {% if future %}
+    <p>※未来のデータは存在しません．</p>
+    {% elif str_weekday == "土" or str_weekday == "日" %}
+    <p>※週末</p>
+    {% elif is_data %}
     <select id="currencyPairSelect">
       <option value="USDJPY" selected>USDJPY</option>
       <option value="EURJPY">EURJPY</option>
