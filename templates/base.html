@@ -30,6 +30,7 @@
         <div class="navbar-start">
           <a class="navbar-item" href="{% url 'home:index' %}">ホーム</a>
           <a class="navbar-item" href="{% url 'diary:index' %}">カレンダー</a>
+          <a class="navbar-item sidebar-toggle" role="button">外部リンク</a>
         </div>
         <div class="navbar-end">
           {% if user.is_authenticated %}
@@ -45,11 +46,40 @@
         </div>
       </div>
     </nav>
+
+    <aside id="sidebar" class="sidebar">
+      <div class="has-background-grey-dark has-text-white">
+        <div class="padding-all">
+          <div class="container">
+            <div class="columns no-margin is-mobile">
+              <div class="column is-narrow">
+              {#   階層図 #}
+                外部リンク一覧  [編集]
+              </div>
+              <div class="column has-text-right">
+                <button class="button sidebar-toggle delete is-dark"></button>
+              </div>
+            </div>
+          </div>
+        <p>
+          <a href="https://jp.tradingview.com/markets/currencies/" class="a-white">
+            TradingView為替市場
+          </a>
+        </p>
+        <p>
+          <a href="https://jp.tradingview.com/symbols/TVC-US10Y/" class="a-white">
+            TradingView米国債10年物利回り
+          </a>
+        </p>
+        </div>
+      </div>
+    </aside>
     <div class="padding-all">
 		  {% block content %}{% endblock content %}
     </div>
     <!-- Custom JS --> 
     <script src="{% static 'js/menu.js' %}"></script>
+    <script src="{% static 'js/sidebar.js' %}"></script>
     <!-- Extra JS -->
 		{% block extra_js %}{% endblock extra_js %}
   </body>
