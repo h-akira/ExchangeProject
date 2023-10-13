@@ -40,6 +40,35 @@
     </p>
     {% include 'diary/USDJPY15T.html' %}
     {% endif %}
+    <h2 class="title is-2 has-text-centered">
+      経済カレンダー
+    </h2>
+    <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+      <thead>
+        <tr>
+          <th>時間</th>
+          <th>国</th>
+          <th>イベント名</th>
+          <th>重要度</th>
+          <th>予想</th>
+          <th>前回</th>
+          <th>結果</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+        <tr>
+          <td>{{ event.time }}</td>
+          <td>{{ event.country }}</td>
+          <td>{{ event.name }}</td>
+          <td>{{ event.importance }}</td>
+          <td>{{ event.prediction }}</td>
+          <td>{{ event.previous }}</td>
+          <td>{{ event.result }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
   <div class="column">
     <h2 class="title is-2 has-text-centered">

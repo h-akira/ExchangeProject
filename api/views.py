@@ -29,7 +29,7 @@ def get_data_by_date(request, date, pair, rule):
 ##############################
 ########## Function ##########
 ##############################
-def get_dic(pair, rule, sma1=5, sma2=20, sma3=60, start_datetime=None, end_datetime=None):
+def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datetime=None):
   if start_datetime == None and end_datetime == None:
     Rate = ExchangeDataTable.objects.filter(pair=pair)
   elif start_datetime == None:

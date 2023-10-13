@@ -62,6 +62,7 @@ def detail(request,date,option=None):
     obj = DiaryTable.objects.get(user=request.user, date=date)
   except DiaryTable.DoesNotExist:
     obj = None
+  events = EventTable.objects.filter(date=date)
   # 為替データの最終時刻を取得し，当日のデータがあるのかどうか判断する
   # UTCで返される
   latest_date = ExchangeDataTable.objects.aggregate(max_dt=Max('dt'))['max_dt'].date()
@@ -83,7 +84,8 @@ def detail(request,date,option=None):
     "form":None,
     "type":None,
     "is_data":is_data,
-    "future":future
+    "future":future,
+    "events":events,
   }
   if option == "edit":
     if obj == None:
