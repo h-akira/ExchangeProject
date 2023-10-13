@@ -1,35 +1,48 @@
 <!-- TradingView Widget BEGIN -->
+<select id="currencyPairSelect">
+  <option value="OANDA/USDJPY" selected>USDJPY</option>
+  <option value="OANDA/EURJPY">EURJPY</option>
+  <option value="OANDA/EURUSD">EURUSD</option>
+  <option value="OANDA/AUDJPY">AUDJPY</option>
+  <option value="OANDA/GBPJPY">GBPJPY</option>
+</select>
 <div class="tradingview-widget-container">
   <div id="tradingview_5cf34"></div>
   <div class="tradingview-widget-copyright"><a href="https://jp.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">TradingViewですべてのマーケットを追跡</span></a></div>
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script type="text/javascript">
-  new TradingView.widget(
-    {
-      // "autosize": true,
-      "width": "100%",
-      "height": "600px",
-      "symbol": "OANDA:USDJPY",
-      "interval": "15",
-      "timezone": "Asia/Tokyo",
-      "theme": "light",
-      "style": "1",
-      "locale": "ja",
-      "enable_publishing": false,
-      "allow_symbol_change": true,
-      "studies": [
-        "STD;Bollinger_Bands",
-        "STD;SMA"
-      ],
-      // "studies_overrides": {
-        // "STD;SMA.title": "SMA60",
-        // "STD;SMA.period": 60,
-        // 'moving average.length': 60
-        // "STD;SMA.plot.color": "#FF0000", // 必要に応じて色をカスタマイズ
-      // },
-      "container_id": "tradingview_5cf34"
-    }
-  );
+    let currentSymbol = "OANDA:USDJPY"; // 初期値
+    const createWidget = (symbol) => {
+      return new TradingView.widget({
+        "width": "100%",
+        "height": "600px",
+        "symbol": symbol,
+        "interval": "15",
+        "timezone": "Asia/Tokyo",
+        "theme": "light",
+        "style": "1",
+        "locale": "ja",
+        "hide_side_toolbar": false,
+        "enable_publishing": false,
+        "details": true,
+        "calendar": true,
+        "allow_symbol_change": true,
+        "studies": [
+          "STD;Bollinger_Bands",
+          "STD;SMA"
+        ],
+        "container_id": "tradingview_5cf34"
+      });
+    };
+    let widget = createWidget(currentSymbol); // 初期ウィジェットの作成
+    document.getElementById('currencyPairSelect').addEventListener('change', (e) => {
+      const selectedSymbol = e.target.value.replace('/', ':'); // OANDA/USDJPY -> OANDA:USDJPY
+      if (selectedSymbol !== currentSymbol) {
+        widget.remove(); // 古いウィジェットを削除
+        widget = createWidget(selectedSymbol); // 新しいウィジェットを作成
+        currentSymbol = selectedSymbol;
+      }
+    });
   </script>
 </div>
 <!-- TradingView Widget END -->
