@@ -102,6 +102,8 @@
   let STR_DATE = "{{ str_date }}";
 </script>
 <script src="{% static 'js/tradingView.js' %}"></script>
+{% else %}
+<script src="{% static 'js/changeSymbol.js' %}"></script>
 {% endif %}
 {% if option == "edit" %}
 <script src="{% static 'js/textarea.js' %}"></script>
