@@ -16,12 +16,14 @@ def get_data_by_date(request, date, pair, rule):
   date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
   end_datetime = datetime.datetime.combine(date, datetime.time(21,0))
   end_datetime = pytz.utc.localize(end_datetime)
-  if "H" in rule:
-    days = 60
-  elif "D" in rule:
+  if "D" in rule:
     days = 250
+  elif "H" in rule:
+    days = 60
+  elif "T" in rule and len(rule)==3:
+    days = 25
   else:
-    days = 10
+    days = 15
   start_datetime = end_datetime - datetime.timedelta(days=days)
   data = get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime)
   return JsonResponse(data, safe=False)
