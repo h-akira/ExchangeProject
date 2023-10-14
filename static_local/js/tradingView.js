@@ -1,3 +1,6 @@
+// Description: This file contains the code for the trading view chart.
+
+// Get the date from the url 
 function fetchChartData() {
   fetch(FETCH_URL_DATA)
     .then(response => response.json())
@@ -41,7 +44,22 @@ function fetchChartData() {
 }
 
 // Create the Lightweight Chart within the container element
-const chart = LightweightCharts.createChart(document.getElementById('container'));
+const chart = LightweightCharts.createChart(document.getElementById('container'),{
+  markers: {
+    visible: false,
+  },
+  crosshair: {
+    mode: LightweightCharts.CrosshairMode.Normal, 
+    vertLine: {
+      visible: true,
+      labelVisible: true,
+    },
+    horzLine: {
+      visible: true,
+      labelVisible: true,
+    },
+  },
+});
 
 // add
 chart.timeScale().applyOptions({
@@ -52,59 +70,88 @@ chart.timeScale().applyOptions({
 // Create the Main Series (Candlesticks)
 const mainSeries = chart.addCandlestickSeries();
 
-// add
-mainSeries.applyOptions({
-  priceLineVisible: true,
-  lastValueVisible: true
-});
-
 const sma1Series = chart.addLineSeries({
   color: '#B8860B',
-  lineWidth: 2,
+  lineWidth: 1,
   lastValueVisible: false,
   priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
 });
 
 const sma2Series = chart.addLineSeries({
   color: '#0000FF',
-  lineWidth: 2,
+  lineWidth: 1,
   lastValueVisible: false,
   priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
 });
 
 const sma3Series = chart.addLineSeries({
-  color: '#FFD700',
-  lineWidth: 2,
+  color: '#006400',
+  lineWidth: 1,
   lastValueVisible: false,
   priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
 });
 
 const bbUp2Series = chart.addLineSeries({
   color: '#FF00FF',
-  lineWidth: 2,
+  lineWidth: 1,
   lastValueVisible: false,
   priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
 });
 
 const bbDown2Series = chart.addLineSeries({
   color: '#FF00FF',
-  lineWidth: 2,
+  lineWidth: 1,
   lastValueVisible: false,
   priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
 });
 
 const bbUp3Series = chart.addLineSeries({
   color: '#C71585',
-  lineWidth: 2,
+  lineWidth: 1,
   lastValueVisible: false,
   priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
 });
 
 const bbDown3Series = chart.addLineSeries({
   color: '#C71585',
-  lineWidth: 2,
+  lineWidth: 1,
   lastValueVisible: false,
   priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
 });
 
 // Fetch chart data
@@ -118,11 +165,7 @@ window.addEventListener("resize", () => {
   chart.resize(width, 600);
 });
 
-// const dataSelect = document.getElementById('dataSelect');
-// dataSelector.addEventListener('change', function() {
-//   FETCH_URL_DATA = dataSelector.value;
-//   fetchChartData();
-// });
+// Add event listener to the date input
 const currencyPairSelect = document.getElementById('currencyPairSelect');
 const timeframeSelect = document.getElementById('timeframeSelect');
 function updateFetchUrl() {
