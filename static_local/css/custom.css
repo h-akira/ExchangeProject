@@ -1,3 +1,11 @@
+/* 横幅が1200px以下の時にカラムを折り返す */
+@media screen and (max-width: 1200px) {
+  .columns.is-multiline .column {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+}
+
 /* navbarの背景色とテキストカラー */
 .navbar, .navbar-menu {
     background-color: #363636 !important; /* 背景色を#333（暗灰色）に設定 */

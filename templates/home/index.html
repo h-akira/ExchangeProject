@@ -8,6 +8,14 @@
 {% block content %}
 <h1 class="title is-1 padding-all has-text-centered">ホーム</h1>
 <div class="padding-all">
+  <div class="columns is-multiline">
+    <div class="column" style="height: 500px;">
+      {% include 'home/calendar.html' %}
+    </div>
+    <div class="column" style="height: 500px">
+      {% include 'home/rate.html' %}
+    </div>
+  </div>
   {% include 'home/USDJPY.html' %}
   <div class="columns">
     <div class="column">
@@ -15,14 +23,6 @@
     </div> 
     <div class="column">
       {% include 'home/US30.html' %}
-    </div>
-  </div>
-  <div class="columns">
-    <div class="column">
-      {% include 'home/calendar.html' %}
-    </div>
-    <div class="column">
-      {% include 'home/rate.html' %}
     </div>
   </div>
 </div>
