@@ -1,6 +1,7 @@
 from .settings_local import *
 import os
 import sys
+from datetime import datetime
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -18,11 +19,13 @@ INSTALLED_APPS = [
   'django.contrib.messages',
   'django.contrib.staticfiles',
   'django_boost',  # 追加
+  'django.forms',
   'accounts.apps.AccountsConfig',
   'api.apps.ApiConfig',
   'back.apps.BackConfig',
   'diary.apps.DiaryConfig',
   'home.apps.HomeConfig',
+  'markdownx'
 ]
 
 MIDDLEWARE = [
@@ -71,6 +74,20 @@ AUTH_PASSWORD_VALIDATORS = [
     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
   },
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+MARKDOWNX_MEDIA_PATH = datetime.now().strftime('markdownx/%Y/%m/%d')
+MARKDOWNX_MARKDOWN_EXTENSIONS = [
+  'markdown.extensions.extra',  # テーブル，コードブロック等
+  'markdown.extensions.codehilite',  # コードハイライト
+  'markdown.extensions.toc',  # 目次
+  'markdown.extensions.nl2br',  # 改行
+	'markdown.extensions.sane_lists',  # 箇条関係
+]
+# 追加する場合は以下のページから選択する．
+# https://python-markdown.github.io/extensions/
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

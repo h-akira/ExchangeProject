@@ -79,3 +79,11 @@
   text-decoration-color: white;
 }
 
+
+.markdownx table {
+  border-collapse: collapse;
+}
+
+.markdownx th,td {
+  border: solid 2px;
+}

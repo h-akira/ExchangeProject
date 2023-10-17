@@ -5,13 +5,23 @@
 {% if option == "edit" %}
 <link rel="stylesheet" href="{% static 'css/textarea.css' %}">
 {% endif %}
+{% if option == "edit" %}
+{# {% if option == "edit" %} #}
+<link rel="stylesheet"href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/default.min.css">
+{% endif %}
 {% endblock extra_css %}
 {% block content %}
+<h2 class="title is-2 has-text-centered">
+  {% if option == "edit" %}
+  {{ str_date }}（{{ str_weekday }}）
+  {% else %}
+  <a href="{% url 'diary:detail' str_prev_date %}"> << </a>
+  {{ str_date }}（{{ str_weekday }}）
+  <a href="{% url 'diary:detail' str_next_date %}"> >> </a>
+  {% endif %}
+</h2>
 <div class="columns">
   <div class="column is-two-thirds" id="includeChart">
-    <h2 class="title is-2 has-text-centered">
-      チャート
-    </h2>
     {% if future %}
     <p>※未来のデータは存在しません．</p>
     {% elif str_weekday == "土" or str_weekday == "日" %}
@@ -37,6 +47,7 @@
     <div
       id="container"
       style="width: 100%; height: 600px"
+      class="content"
      ></div>
     {% else %}
     <p>
@@ -75,16 +86,6 @@
     </table>
   </div>
   <div class="column">
-    <h2 class="title is-2 has-text-centered">
-      {% if option == "edit" %}
-      {{ str_date }}（{{ str_weekday }}）
-      {% else %}
-      <a href="{% url 'diary:detail' str_prev_date %}"> << </a>
-      {{ str_date }}（{{ str_weekday }}）
-      <a href="{% url 'diary:detail' str_next_date %}"> >> </a>
-    </h2>
-    {% endif %}
-    </h2>
     {% if option == "edit" %}
     {% if type == "create" %}
     <form class="" action="{% url 'diary:create' str_date %}" method="post">
@@ -94,28 +95,31 @@
     <form class="" action="{% url 'diary:update' str_date %}" method="post">
     {% endif %}
       {% csrf_token %}
-      <div class="padding-bottom-10">
+      <div class="has-text-right">
+        {% if type == "create" %}
+        <button type="submit" class="button is-link is-outlined">登録</button>
+        {% elif type == "update" %}
+        <button type="submit" class="button is-link is-outlined">更新</button>
+        <a href="{% url 'diary:delete' str_date %}" class="button is-danger is-outlined">削除</a>
+        {% else %}
+        <button type="submit" class="button is-link is-outlined">登録</button>
+        {% endif %}
+      </div>
+      <div class="padding-bottom-10 content markdownx">
         <div class="temporary-height">{{ form.text }}</div>
       </div>
-      {% if type == "create" %}
-      <button type="submit" class="button is-link is-outlined">登録</button>
-      {% elif type == "update" %}
-      <button type="submit" class="button is-link is-outlined">更新</button>
-      <a href="{% url 'diary:delete' str_date %}" class="button is-danger is-outlined">削除</a>
-      {% else %}
-      <button type="submit" class="button is-link is-outlined">登録</button>
-      {% endif %}
+      {{ form.media }}
     </form>
     {% else %}
     {# <div class="card"> #}
     <div class="card card-bordered">
       <div class="card-content">
-        <h4 class="title is-4 has-text-centered">日記</h4>
+        {# <h4 class="title is-4 has-text-centered">日記</h4> #}
         {% if obj == None %}
-        <div class="padding-bottom-10">存在しません．</div>
+        <div class="padding-bottom-10">日記が存在しません．</div>
         <a href="{% url 'diary:detail' str_date "edit" %}" class="button is-link is-outlined">作成</a>
         {% else %}
-        <div class="padding-all">{{ obj.text|linebreaks }}</div>
+        <div class="padding-all markdownx content">{{ obj.get_text_markdownx | safe }}</div>
         <a href="{% url 'diary:detail' str_date "edit" %}" class="button is-link is-outlined">編集</a>
         {% endif %}
       </div>
@@ -139,6 +143,8 @@
 <script src="{% static 'js/changeSymbol.js' %}"></script>
 {% endif %}
 {% if option == "edit" %}
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 <script src="{% static 'js/textarea.js' %}"></script>
 {% endif %}
 {% endblock extra_js %}
