@@ -5,10 +5,7 @@
 {% if option == "edit" %}
 <link rel="stylesheet" href="{% static 'css/textarea.css' %}">
 {% endif %}
-{% if option == "edit" %}
-{# {% if option == "edit" %} #}
 <link rel="stylesheet"href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/default.min.css">
-{% endif %}
 {% endblock extra_css %}
 {% block content %}
 <h2 class="title is-2 has-text-centered">
@@ -105,21 +102,20 @@
         <button type="submit" class="button is-link is-outlined">登録</button>
         {% endif %}
       </div>
-      <div class="padding-bottom-10 content markdownx">
+      <div class="padding-bottom-10">
         <div class="temporary-height">{{ form.text }}</div>
       </div>
       {{ form.media }}
     </form>
     {% else %}
-    {# <div class="card"> #}
     <div class="card card-bordered">
-      <div class="card-content">
+      <div class="card-content content">
         {# <h4 class="title is-4 has-text-centered">日記</h4> #}
         {% if obj == None %}
         <div class="padding-bottom-10">日記が存在しません．</div>
         <a href="{% url 'diary:detail' str_date "edit" %}" class="button is-link is-outlined">作成</a>
         {% else %}
-        <div class="padding-all markdownx content">{{ obj.get_text_markdownx | safe }}</div>
+        <div class="padding-all markdownx">{{ obj.get_text_markdownx | safe }}</div>
         <a href="{% url 'diary:detail' str_date "edit" %}" class="button is-link is-outlined">編集</a>
         {% endif %}
       </div>
@@ -142,9 +138,9 @@
 {% else %}
 <script src="{% static 'js/changeSymbol.js' %}"></script>
 {% endif %}
-{% if option == "edit" %}
 <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
+{% if option == "edit" %}
 <script src="{% static 'js/textarea.js' %}"></script>
 {% endif %}
 {% endblock extra_js %}
