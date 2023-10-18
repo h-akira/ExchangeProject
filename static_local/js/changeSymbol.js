@@ -24,8 +24,16 @@ document.getElementById('currencyPairSelect').addEventListener('change', (e) => 
   const selectedSymbol = e.target.value.replace('/', ':'); // OANDA/USDJPY -> OANDA:USDJPY
   if (selectedSymbol !== currentSymbol) {
     widget.remove(); // 古いウィジェットを削除
-    widget = createWidget(selectedSymbol); // 新しいウィジェットを作成
+    widget = createWidget(selectedSymbol, currentStudy); // 新しいウィジェットを作成
     currentSymbol = selectedSymbol;
   }
 });
 
+document.getElementById('indicatorSelect').addEventListener('change', (e) => {
+  const selectedStudy = e.target.value;
+  if (selectedStudy !== currentStudy) {
+    widget.remove(); // 古いウィジェットを削除
+    widget = createWidget(currentSymbol, selectedStudy); // 新しいウィジェットを作成
+    currentStudy = selectedStudy;
+  }
+});
