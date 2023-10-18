@@ -97,7 +97,9 @@
         <button type="submit" class="button is-link is-outlined">登録</button>
         {% elif type == "update" %}
         <button type="submit" class="button is-link is-outlined">更新</button>
-        <a href="{% url 'diary:delete' str_date %}" class="button is-danger is-outlined">削除</a>
+        <a class="button js-modal-trigger is-danger is-outlined" data-target="delete">
+          削除
+        </a>
         {% else %}
         <button type="submit" class="button is-link is-outlined">登録</button>
         {% endif %}
@@ -106,6 +108,9 @@
         <div class="temporary-height">{{ form.text }}</div>
       </div>
       {{ form.media }}
+      {% if type == "update" %}
+      {% include 'diary/delete_modal.html' %}
+      {% endif %}
     </form>
     {% else %}
     <div class="card card-bordered">
@@ -142,5 +147,8 @@
 <script>hljs.initHighlightingOnLoad();</script>
 {% if option == "edit" %}
 <script src="{% static 'js/textarea.js' %}"></script>
+{% endif %}
+{%if type == "update" %}
+<script src="{% static 'js/modal.js' %}"></script>
 {% endif %}
 {% endblock extra_js %}
