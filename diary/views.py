@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Max
 import datetime
 from .models import EventTable, DiaryTable
+from .models import dic_omit
 from .forms import DiaryForm
 from api.models import ExchangeDataTable
 
@@ -27,22 +28,6 @@ COLOR = {
   "China": "#DE2910",      # 中国の国旗の赤を使用: 鮮やかな赤色
   "Mexico": "#007748",     # メキシコの国旗の緑を使用: 深い緑色
   "Other": "#808080",      # グレー: 他のカテゴリを示すニュートラルな色
-}
-dic = {
-  "Japan": "日",
-  "EU": "欧",
-  "USA": "米",
-  "Germany": "独",
-  "UK": "英",
-  "France": "仏",
-  "Canada": "加",
-  "Australia": "豪",
-  "NewZealand": "新",
-  "Swiss": "瑞",
-  "Turkey": "土",
-  "China": "中",
-  "Mexico": "墨",
-  "Other": "他"
 }
 WEEK = ("月","火","水","木","金","土","日")
 
@@ -146,7 +131,7 @@ def events_json(request):
     event_list.append(
       {
         'id': e.id,
-        'title': f"【{dic[e.country]}{e.importance}】{e.name}",
+        'title': f"【{dic_omit[e.country]}{e.importance}】{e.name}",
         'start':start,
         'end':end, 
         'description': e.description,

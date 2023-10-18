@@ -20,6 +20,38 @@ COUNTRY = (
   ("Mexico","メキシコ"),
   ("Other","その他"),
 )
+dic_full = {
+  "Japan": "日本",
+  "EU": "EU",
+  "USA": "アメリカ",
+  "Germany": "ドイツ",
+  "UK": "イギリス",
+  "France": "フランス",
+  "Canada": "カナダ",
+  "Australia": "オーストラリア",
+  "NewZealand": "ニュージーランド",
+  "Swiss": "スイス",
+  "Turkey": "トルコ",
+  "China": "中国",
+  "Mexico": "メキシコ",
+  "Other": "その他"
+}
+dic_omit = {
+  "Japan": "日",
+  "EU": "欧",
+  "USA": "米",
+  "Germany": "独",
+  "UK": "英",
+  "France": "仏",
+  "Canada": "加",
+  "Australia": "豪",
+  "NewZealand": "新",
+  "Swiss": "瑞",
+  "Turkey": "土",
+  "China": "中",
+  "Mexico": "墨",
+  "Other": "他"
+}
 
 class EventTable(models.Model):
   user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
@@ -32,6 +64,8 @@ class EventTable(models.Model):
   prediction = models.CharField(max_length=63, null=True, blank=True)
   result = models.CharField(max_length=63, null=True, blank=True)
   description = models.TextField(null=True, blank=True)
+  def country_jp_full(self):
+    return dic_full[self.country]
   class Meta:
     constraints = [
       models.UniqueConstraint(
