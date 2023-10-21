@@ -10,6 +10,5 @@ urlpatterns = [
   path('update/<str:date>/', views.update, name='update'),
   path('create/<str:date>/', views.create, name='create'),
   path('delete/<str:date>/', views.delete, name='delete'),
-  path('events_json/', views.events_json, name='events_json'),
 ]
 

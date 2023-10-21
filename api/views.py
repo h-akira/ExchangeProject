@@ -7,9 +7,56 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from .models import ExchangeDataTable
+from .models import ExchangeDataTable, EventTable
+from .models import dic_omit
+from django.db.models import Q
 # 独自関数
 import chart.chart
+
+# GPT先生に考えてもらった色
+COLOR = {
+  "Japan": "#BC002D",      # 日本の国旗の赤を使用: 鮮やかな赤色
+  "EU": "#0000FF",         # 青: EUの旗の基調となる色
+  "USA": "#B22234",        # アメリカの国旗の赤を使用: やや深めの赤色
+  "Germany": "#FFCC00",    # ドイツの国旗の黄色を使用: 鮮やかな黄色
+  "UK": "#C60C30",         # イギリスの国旗の赤を使用: やや深めの赤色
+  "France": "#0055A4",     # フランスの国旗の青を使用: やや濃い青色
+  "Canada": "#FF0000",     # カナダの国旗の赤を使用: 鮮やかな赤色
+  "Australia": "#1F2F57",  # オーストラリアの国旗の青を使用: 深い青色
+  "NewZealand": "#D52B1E", # ニュージーランドの国旗の赤を使用: 鮮やかな赤色
+  "Swiss": "#D52B1E",      # スイスの国旗の赤を使用: 鮮やかな赤色
+  "Turkey": "#E30A17",     # トルコの国旗の赤を使用: やや明るい赤色
+  "China": "#DE2910",      # 中国の国旗の赤を使用: 鮮やかな赤色
+  "Mexico": "#007748",     # メキシコの国旗の緑を使用: 深い緑色
+  "Other": "#808080",      # グレー: 他のカテゴリを示すニュートラルな色
+}
+
+def events_json(request):
+  if request.user.is_authenticated:
+    events = EventTable.objects.filter(Q(user=request.user) | Q(user=None))
+  else:
+    events = EventTable.objects.filter(user=None)
+  event_list = []
+  for e in events:
+    if e.time:
+      start = datetime.datetime.combine(e.date, e.time).strftime('%Y-%m-%dT%H:%M:%S')
+      # デフォルトでendがstartの一時間後になるようで，日付をまたぐことがあるので
+      end = (datetime.datetime.combine(e.date, e.time)+datetime.timedelta(seconds=1)).strftime('%Y-%m-%dT%H:%M:%S')
+    else:
+      start = e.date.strftime('%Y-%m-%d')
+      end = start
+    event_list.append(
+      {
+        'id': e.id,
+        'title': f"【{dic_omit[e.country]}{e.importance}】{e.name}",
+        'start':start,
+        'end':end, 
+        'description': e.description,
+        'borderColor': COLOR[e.country],
+        'backgroundColor': COLOR[e.country]
+      }
+    )
+  return JsonResponse(event_list, safe=False)
 
 # @login_required
 def get_data_by_date(request, date, pair, rule):

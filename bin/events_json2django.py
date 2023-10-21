@@ -29,7 +29,7 @@ def main():
   import django
   django.setup()
   from django.conf import settings
-  from diary.models import EventTable
+  from api.models import EventTable
   from accounts.models import CustomUser
   if not options.username:
     if "y" != input("usernameが指定されていませんが構いませんか？(y/other):"):

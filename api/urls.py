@@ -9,4 +9,5 @@ urlpatterns = [
     views.get_data_by_date,
     name="get_data_by_date"
   ),
+  path('events_json/', views.events_json, name='events_json'),
 ]
