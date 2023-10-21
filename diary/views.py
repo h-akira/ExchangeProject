@@ -47,7 +47,10 @@ def detail(request,date,option=None):
     obj = DiaryTable.objects.get(user=request.user, date=date)
   except DiaryTable.DoesNotExist:
     obj = None
-  events = EventTable.objects.filter(date=date)
+  events_1 = EventTable.objects.filter(date=date, time__gte=datetime.time(6,0))
+  events_2 = EventTable.objects.filter(date=date + datetime.timedelta(days=1), time__lt=datetime.time(6,0))
+  events = events_1 | events_2
+  events = events.order_by("date", "time")
   # 為替データの最終時刻を取得し，当日のデータがあるのかどうか判断する
   # UTCで返される
   latest_date = ExchangeDataTable.objects.aggregate(max_dt=Max('dt'))['max_dt'].date()
