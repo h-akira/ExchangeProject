@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Max
+from django.db.models import Max, Min
 import datetime
 from .models import DiaryTable
 from api.models import EventTable, ExchangeDataTable
@@ -36,7 +36,8 @@ def detail(request,date,option=None):
   # 為替データの最終時刻を取得し，当日のデータがあるのかどうか判断する
   # UTCで返される
   latest_date = ExchangeDataTable.objects.aggregate(max_dt=Max('dt'))['max_dt'].date()
-  if latest_date < date:
+  oldest_date = ExchangeDataTable.objects.aggregate(min_dt=Min('dt'))['min_dt'].date()
+  if latest_date < date or date < oldest_date:
     is_data=False
   else:
     is_data=True

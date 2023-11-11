@@ -56,6 +56,7 @@
       ※データがまだ追加されていないため外部のウィジェットを表示します．
     </p>
     {% include 'diary/USDJPY15T.html' %}
+    <br>
     {% endif %}
     <h2 class="title is-2 has-text-centered">
       経済カレンダー
@@ -146,7 +147,7 @@
 </script>
 <script src="{% static 'js/tradingView.js' %}"></script>
 {% else %}
-<script src="{% static 'js/changeSymbol.js' %}"></script>
+<script src="{% static 'js/widget.js' %}"></script>
 {% endif %}
 <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
