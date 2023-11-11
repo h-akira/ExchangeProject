@@ -176,3 +176,36 @@ function updateFetchUrl() {
 }
 currencyPairSelect.addEventListener('change', updateFetchUrl);
 timeframeSelect.addEventListener('change', updateFetchUrl);
+
+document.addEventListener('DOMContentLoaded', function() {
+  const container = document.getElementById('container');
+  const resizer = document.getElementById('resizer');
+
+  resizer.addEventListener('mousedown', initDrag, false);
+
+  let startY, startHeight;
+
+  function initDrag(e) {
+    startY = e.clientY;
+    startHeight = parseInt(window.getComputedStyle(container).height, 10);
+
+    document.documentElement.addEventListener('mousemove', doDrag, false);
+    document.documentElement.addEventListener('mouseup', stopDrag, false);
+  }
+
+  // チャートのサイズ変更
+  function doDrag(e) {
+    let newHeight = startHeight + e.clientY - startY;
+    container.style.height = newHeight + 'px';
+    // チャートのサイズをコンテナの新しいサイズに合わせて更新
+    chart.applyOptions({ height: newHeight });
+  }
+
+  function stopDrag() {
+    document.documentElement.removeEventListener('mousemove', doDrag, false);
+    document.documentElement.removeEventListener('mouseup', stopDrag, false);
+  }
+});
+
+
+
