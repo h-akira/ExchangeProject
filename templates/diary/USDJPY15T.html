@@ -18,7 +18,7 @@
   <script type="text/javascript">
     let currentSymbol = "OANDA:USDJPY"; // 初期値
     let currentStudy = "Bollinger_SMA"; // 初期値
-    let currentHeight = "600px"; // 初期値
+    let currentHeight = "600"; // 初期値，px
     const createWidget = (symbol, study, height) => {
       let studiesArray = [];
       if (study === "Ichimoku") {
@@ -28,7 +28,7 @@
       }
       return new TradingView.widget({
         "width": "100%",
-        "height": height,
+        "height": height + "px",
         "symbol": symbol,
         "interval": "15",
         "timezone": "Asia/Tokyo",

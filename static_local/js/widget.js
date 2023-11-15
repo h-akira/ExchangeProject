@@ -10,31 +10,43 @@
 </select> 
 <script type="text/javascript">
   let currentSymbol = "OANDA:USDJPY"; // 初期値
-  const createWidget = (symbol) => {
+  let currentStudy = "Bollinger_SMA"; // 初期値
+  let currentHeight = "600"; // 初期値，px
+  const createWidget = (symbol, study, height) => {
+    let studiesArray = [];
+    if (study === "Ichimoku") {
+      studiesArray = ["STD;Ichimoku%1Cloud"];
+    } else if (study === "Bollinger_SMA") {
+      studiesArray = ["STD;Bollinger_Bands", "STD;SMA"];
+    }
     return new TradingView.widget({
       ...
+      "height": height + "px",
       "symbol": symbol,
+      "studies": studiesArray,
      ...
     });
   };
-  let widget = createWidget(currentSymbol); // 初期ウィジェットの作成
+  let widget = createWidget(currentSymbol, currentStudy, currentHeight); // 初期ウィジェットの作成
 </script>
 */
+
 // symbolをプルダウンで選択されたものに変更する
 document.getElementById('currencyPairSelect').addEventListener('change', (e) => {
   const selectedSymbol = e.target.value.replace('/', ':'); // OANDA/USDJPY -> OANDA:USDJPY
   if (selectedSymbol !== currentSymbol) {
     widget.remove(); // 古いウィジェットを削除
-    widget = createWidget(selectedSymbol, currentStudy); // 新しいウィジェットを作成
+    widget = createWidget(selectedSymbol, currentStudy, currentHeight); // 新しいウィジェットを作成
     currentSymbol = selectedSymbol;
   }
 });
 
+// indicatorをプルダウンで選択されたものに変更する
 document.getElementById('indicatorSelect').addEventListener('change', (e) => {
   const selectedStudy = e.target.value;
   if (selectedStudy !== currentStudy) {
     widget.remove(); // 古いウィジェットを削除
-    widget = createWidget(currentSymbol, selectedStudy); // 新しいウィジェットを作成
+    widget = createWidget(currentSymbol, selectedStudy, currentHeight); // 新しいウィジェットを作成
     currentStudy = selectedStudy;
   }
 });
@@ -62,11 +74,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function doDrag(e) {
-    let newHeight = startHeight + e.clientY - startY;
-    container.style.height = newHeight + 'px';
+    currentHeight = startHeight + e.clientY - startY;
+    container.style.height = currentHeight + 'px';
     // ウィジェットを再読み込みする
     widget.remove();
-    widget = createWidget(currentSymbol, currentStudy, newHeight);
+    widget = createWidget(currentSymbol, currentStudy, currentHeight);
   }
 
   function stopDrag() {
