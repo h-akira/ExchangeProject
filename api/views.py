@@ -109,7 +109,10 @@ def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datet
       interval = str(1)+interval[-1]
     else:
       resample = False
-    ticker = f'{pair.replace("/","")}=X'
+    if "^" in pair:
+      ticker = pair
+    else:
+      ticker = f'{pair.replace("/","")}=X'
     df = web.get_data_yahoo(tickers=ticker,start=start_datetime, end=end_datetime, interval=interval)
     if df.index[0].tzinfo is None:
       df.index = df.index.tz_localize('UTC')
