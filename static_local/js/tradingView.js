@@ -4,7 +4,10 @@
 function fetchChartData() {
   fetch(FETCH_URL_DATA)
     .then(response => response.json())
-    .then(data => {
+    .then(response => {
+      const data = response.data;
+      const source = response.source;
+      document.getElementById('sourceDisplay').textContent = source;
       mainSeries.setData(data.map(item => ({
         time: item.time,
         open: item.open,

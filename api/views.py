@@ -84,14 +84,15 @@ def get_data_by_date(request, date, pair, rule):
 ########## Function ##########
 ##############################
 def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datetime=None):
-  dataObj = ExchangeDataTable.objects.filter(pair=pair)
   # データベースにデータがあるかどうか確認，なければyfinanceから取得
+  # 期間が指定されていない場合はyfinanceを使わず無条件でデータベースにあるものすべてを取得
+  dataObjects = ExchangeDataTable.objects.filter(pair=pair.replace("/",""))
   if start_datetime == None or end_datetime == None:
     yf=False
   else:
-    latest_result = ExchangeDataTable.objects.aggregate(max_dt=Max('dt'))
+    latest_result = dataObjects.aggregate(max_dt=Max('dt'))
     latest_date = latest_result['max_dt'].date() if latest_result['max_dt'] else None
-    oldest_result = ExchangeDataTable.objects.aggregate(min_dt=Min('dt'))
+    oldest_result = dataObjects.aggregate(min_dt=Min('dt'))
     oldest_date = oldest_result['min_dt'].date() if oldest_result['min_dt'] else None
     if latest_date == None or oldest_date == None:
       yf=True
@@ -100,7 +101,8 @@ def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datet
     else:
       yf=False
   if yf:
-    # 1, 2, 5, 15, 30, 60, 1h, 1d, 1wk, 1mo, 3moに対応
+    print("get data from yfinance")
+    # intervalは1, 2, 5, 15, 30, 60, 1h, 1d, 1wk, 1mo, 3moに対応するらしい
     interval = rule.replace("T", "m").replace("H", "h").replace("D", "d")
     if interval not in ["1m", "2m", "5m", "15m", "30m", "60m", "90m", "1h", "1d"]:
       resample = True
@@ -115,14 +117,15 @@ def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datet
     if resample:
       df = chart.chart.resample(df, rule)
   else:
+    print("get data from database")
     if start_datetime == None and end_datetime == None:
-      Rate = ExchangeDataTable.objects.filter(pair=pair)
+      Rate = dataObjects
     elif start_datetime == None:
-      Rate = ExchangeDataTable.objects.filter(pair=pair, dt__lt=end_datetime)
+      Rate = dataObjects.filter(dt__lt=end_datetime)
     elif end_datetime == None:
-      Rate = ExchangeDataTable.objects.filter(pair=pair, dt__gte=start_datetime)
+      Rate = dataObjects.filter(dt__gte=start_datetime)
     else:
-      Rate = ExchangeDataTable.objects.filter(pair=pair, dt__gte=start_datetime, dt__lt=end_datetime)
+      Rate = dataObjects.filter(dt__gte=start_datetime, dt__lt=end_datetime)
     Rate = Rate.order_by("dt")
     df = pd.DataFrame.from_records(Rate.values())
     df['dt'] = pd.to_datetime(df['dt'])
@@ -158,4 +161,11 @@ def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datet
         "bb_down_3": row["bb_down_3"]
       }
     )
-  return data
+    if yf:
+      source = "Yahoo Finance"
+    else:
+      source = "My Database"
+  return {
+    "source": source,
+    "data": data
+  }
