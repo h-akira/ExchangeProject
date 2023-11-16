@@ -9,7 +9,10 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import ExchangeDataTable, EventTable
 from .models import dic_omit
-from django.db.models import Q
+from django.db.models import Q, Max, Min
+import pandas_datareader.data as web
+import yfinance as yf
+yf.pdr_override()
 # 独自関数
 import chart.chart
 
@@ -67,10 +70,12 @@ def get_data_by_date(request, date, pair, rule):
     days = 250
   elif "H" in rule:
     days = 60
-  elif "T" in rule and len(rule)==3:
+  elif rule in ["15T", "30T"]:
     days = 25
   else:
-    days = 15
+    # yfinanceの制約で1分足は7日分しか取得できない
+    # yfinanceの制約で10分足等は取得できず1分足から変換する
+    days = 7
   start_datetime = end_datetime - datetime.timedelta(days=days)
   data = get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime)
   return JsonResponse(data, safe=False)
@@ -79,21 +84,52 @@ def get_data_by_date(request, date, pair, rule):
 ########## Function ##########
 ##############################
 def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datetime=None):
-  if start_datetime == None and end_datetime == None:
-    Rate = ExchangeDataTable.objects.filter(pair=pair)
-  elif start_datetime == None:
-    Rate = ExchangeDataTable.objects.filter(pair=pair, dt__lt=end_datetime)
-  elif end_datetime == None:
-    Rate = ExchangeDataTable.objects.filter(pair=pair, dt__gte=start_datetime)
+  dataObj = ExchangeDataTable.objects.filter(pair=pair)
+  # データベースにデータがあるかどうか確認，なければyfinanceから取得
+  if start_datetime == None or end_datetime == None:
+    yf=False
   else:
-    Rate = ExchangeDataTable.objects.filter(pair=pair, dt__gte=start_datetime, dt__lt=end_datetime)
-  Rate = Rate.order_by("dt")
-  df = pd.DataFrame.from_records(Rate.values())
-  df['dt'] = pd.to_datetime(df['dt'])
-  df['dt'] = df['dt'].dt.tz_convert('Asia/Tokyo')
-  df = df.drop(columns=['id', 'pair'])
-  df.set_index('dt', inplace=True)
-  df = chart.chart.resample(df, rule)
+    latest_result = ExchangeDataTable.objects.aggregate(max_dt=Max('dt'))
+    latest_date = latest_result['max_dt'].date() if latest_result['max_dt'] else None
+    oldest_result = ExchangeDataTable.objects.aggregate(min_dt=Min('dt'))
+    oldest_date = oldest_result['min_dt'].date() if oldest_result['min_dt'] else None
+    if latest_date == None or oldest_date == None:
+      yf=True
+    elif latest_date < end_datetime.date() or oldest_date > start_datetime.date():
+      yf=True
+    else:
+      yf=False
+  if yf:
+    # 1, 2, 5, 15, 30, 60, 1h, 1d, 1wk, 1mo, 3moに対応
+    interval = rule.replace("T", "m").replace("H", "h").replace("D", "d")
+    if interval not in ["1m", "2m", "5m", "15m", "30m", "60m", "90m", "1h", "1d"]:
+      resample = True
+      interval = str(1)+interval[-1]
+    else:
+      resample = False
+    ticker = f'{pair.replace("/","")}=X'
+    df = web.get_data_yahoo(tickers=ticker,start=start_datetime, end=end_datetime, interval=interval)
+    if df.index[0].tzinfo is None:
+      df.index = df.index.tz_localize('UTC')
+    df.index = df.index.tz_convert('Asia/Tokyo')
+    if resample:
+      df = chart.chart.resample(df, rule)
+  else:
+    if start_datetime == None and end_datetime == None:
+      Rate = ExchangeDataTable.objects.filter(pair=pair)
+    elif start_datetime == None:
+      Rate = ExchangeDataTable.objects.filter(pair=pair, dt__lt=end_datetime)
+    elif end_datetime == None:
+      Rate = ExchangeDataTable.objects.filter(pair=pair, dt__gte=start_datetime)
+    else:
+      Rate = ExchangeDataTable.objects.filter(pair=pair, dt__gte=start_datetime, dt__lt=end_datetime)
+    Rate = Rate.order_by("dt")
+    df = pd.DataFrame.from_records(Rate.values())
+    df['dt'] = pd.to_datetime(df['dt'])
+    df['dt'] = df['dt'].dt.tz_convert('Asia/Tokyo')
+    df = df.drop(columns=['id', 'pair'])
+    df.set_index('dt', inplace=True)
+    df = chart.chart.resample(df, rule)
   df = chart.chart.add_BBands(
     df,20,2,0,name={"up":"bb_up_2", "middle":"bb_middle", "down":"bb_down_2"}
   )
