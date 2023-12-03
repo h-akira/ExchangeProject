@@ -86,7 +86,11 @@
           <td>{{ event.time }}</td>
           <td>{{ event.country_jp_full }}</td>
           <td>{{ event.name }}</td>
+          {% if event.importance %}
           <td>{{ event.importance }}</td>
+          {% else %}
+          <td></td>
+          {% endif %}
           <td>{{ event.prediction }}</td>
           <td>{{ event.previous }}</td>
           <td>{{ event.result }}</td>
