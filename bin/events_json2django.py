@@ -18,6 +18,8 @@ def parse_args():
   parser.add_argument("--version", action="version", version='%(prog)s 0.0.1')
   parser.add_argument("--encoding", metavar="encoding", default="utf-8", help="encoding")
   parser.add_argument("-u", "--username", metavar="username", help="username")
+  parser.add_argument("--importance", metavar="importance", type=int, default=4, help="重要度がある場合は指定した重要度以上の経済指標のみ取得する")
+  parser.add_argument("--no-importance", action="store_true", help="重要度が無い経済指標を取得しない")
   # parser.add_argument("-", "--", action="store_true", help="")
   parser.add_argument("file", metavar="input-file", help="json file")
   options = parser.parse_args()
@@ -39,8 +41,12 @@ def main():
     user = CustomUser.objects.get(username=options.username)
   data = json.load(open(options.file, mode="r", encoding=options.encoding))
   for d in data:
-    if d["importance"] < 2:
-      continue
+    try:
+      if int(d["importance"]) < options.importance:
+        continue
+    except ValueError:
+      if options.no_importance:
+        continue
     date = datetime.datetime.strptime(d["date"], "%Y-%m-%d").date()
     if d["time"] != "":
       time = datetime.datetime.strptime(d["time"], "%H:%M").time()
