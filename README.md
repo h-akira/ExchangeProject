@@ -28,6 +28,7 @@ Djangoを用いて為替関係の情報の取りまとめや振り返り
 後者のみ本リポジトリ内のディレクトリ`bin`に配置している．
 - `bin/rate_csv2django.py`
 - `bin/events_json2django.py`
+
 なお，レートに関しては1分足も含めて`pandas_datareader`でYahoo Finenceから
 取得可能であるため，
 データベースにデータが無いときは
