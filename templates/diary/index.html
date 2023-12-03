@@ -20,7 +20,9 @@
       events: '/api/events_json/',  // Djangoのエンドポイントを指定
       eventClick: function(info) {
         // イベントをクリックしたときの動作（例：イベントの詳細を表示するなど）
-        alert(info.event.title + "\n" + info.event.description);
+        {# alert(info.event.title + "\n" + info.event.description); #}
+        var diaryURL = "/events/detail/" + info.event.id + "/";
+        window.location.href = diaryURL;
       },
       dateClick: function(info) {
         var diaryURL = "/diary/detail/" + info.dateStr;

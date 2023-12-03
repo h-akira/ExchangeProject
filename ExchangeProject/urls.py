@@ -25,6 +25,7 @@ urlpatterns = [
   path('accounts/', include('accounts.urls')),
   path('back/',include('back.urls')),
   path('diary/',include('diary.urls')),
+  path('events/',include('events.urls')),
   path('api/',include('api.urls')),
   path('markdownx/', include('markdownx.urls')), 
   path('',include('home.urls')),

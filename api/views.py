@@ -7,8 +7,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from .models import ExchangeDataTable, EventTable
-from .models import dic_omit
+from .models import ExchangeDataTable, EventTable, dic_omit
 from django.db.models import Q, Max, Min
 import pandas_datareader.data as web
 import yfinance as yf
@@ -58,7 +57,6 @@ def events_json(request):
         'title': title,
         'start':start,
         'end':end, 
-        'description': e.description,
         'borderColor': COLOR[e.country],
         'backgroundColor': COLOR[e.country]
       }
@@ -82,6 +80,24 @@ def get_data_by_date(request, date, pair, rule):
     days = 7
   start_datetime = end_datetime - datetime.timedelta(days=days)
   data = get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime)
+  return JsonResponse(data, safe=False)
+
+def get_data_by_event(request, event_id, pair, rule):
+  event = EventTable.objects.get(id=event_id)
+  if not event.time and event.time != datetime.time(0,0):
+    return JsonResponse({}, safe=False)
+  dt = datetime.datetime.combine(event.date, event.time)
+  dt = pytz.timezone("Asia/Tokyo").localize(dt)
+  if "T" in rule:
+    m = int(rule.replace("T", ""))
+  elif "H" in rule:
+    m = int(rule.replace("H", "")) * 60
+  else:
+    return JsonResponse({}, safe=False)
+  start_datetime = dt - datetime.timedelta(minutes=m*200)
+  end_datetime = dt + datetime.timedelta(minutes=m*80)
+  data = get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime)
+  # if data["source"] == "My Database":
   return JsonResponse(data, safe=False)
 
 ##############################

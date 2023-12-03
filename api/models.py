@@ -77,7 +77,7 @@ class EventTable(models.Model):
   previous = models.CharField(max_length=63, null=True, blank=True)
   prediction = models.CharField(max_length=63, null=True, blank=True)
   result = models.CharField(max_length=63, null=True, blank=True)
-  description = models.TextField(null=True, blank=True)
+  influence = models.CharField(max_length=63, null=True, blank=True)
   def country_jp_full(self):
     return dic_full[self.country]
   class Meta:

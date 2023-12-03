@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}日記{% endblock title %}
+{% block title %}経済イベント詳細{% endblock title %}
 {% block extra_css %}
 {% if option == "edit" %}
 <link rel="stylesheet" href="{% static 'css/textarea.css' %}">
@@ -9,20 +9,18 @@
 {% endblock extra_css %}
 {% block content %}
 <h2 class="title is-2 has-text-centered">
-  {% if option == "edit" %}
-  {{ str_date }}（{{ str_weekday }}）
-  {% else %}
-  <a href="{% url 'diary:detail' str_prev_date %}"> << </a>
-  {{ str_date }}（{{ str_weekday }}）
-  <a href="{% url 'diary:detail' str_next_date %}"> >> </a>
-  {% endif %}
+  【{{event.country_jp_full}}】{{ event.name }}
 </h2>
+<h4 class="title is-4 has-text-centered">
+  {{ str_date }}（{{ str_weekday }}）{{ event.time }}
+</h4>
+<p class="has-text-centered">
+  重要度：{{ event.importance }}，予想：{{ event.prediction }}，前回：{{ event.previous }}，結果：{{ event.result }}
+</p>
 <div class="columns">
   <div class="column is-two-thirds" id="includeChart">
     {% if future %}
     <p>※未来のデータは存在しません．</p>
-    {% elif str_weekday == "土" or str_weekday == "日" %}
-    <p>※週末</p>
     {% elif is_data %}
     <select id="currencyPairSelect">
       <option value="USDJPY" selected>USDJPY</option>
@@ -38,13 +36,18 @@
       <option value="^TNX">TNX</option>
     </select>
     <select id="timeframeSelect">
-      <option value="1T">1分足</option>
+      {% if min_interval == "1T" %}
+      <option value="1T" selected>1分足</option>
       <option value="5T">5分足</option>
       <option value="10T">10分足</option>
-      <option value="15T" selected>15分足</option>
-      <option value="30T">30分足</option>
-      <option value="1H">1時間足</option>
+      <option value="15T" >15分足</option>
+      {% elif min_interval == "5T" %}
+      <option value="5T" selected>5分足</option>
+      <option value="15T" >15分足</option>
+      {% elif min_interval == "1H" %}
+      <option value="1H" selected>1時間足</option>
       <option value="4H">4時間足</option>
+      {% endif %}
     </select>
     SMA(9, 20, 60) and Bollinger Bands(20, 2 and 3),
     Data from <span id="sourceDisplay">..</span>.
@@ -60,55 +63,18 @@
     <br>
     {% else %}
     <p>
-      Since it is the current day, the TradingView widget will be displayed.
+      ※時刻が不明なためデータを取得できません．
     </p>
-    {% include 'diary/USDJPY15T.html' %}
-    <br>
     {% endif %}
-    <h2 class="title is-2 has-text-centered">
-      経済カレンダー
-    </h2>
-    <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
-      <thead>
-        <tr>
-          <th>時間</th>
-          <th>国</th>
-          <th>イベント名</th>
-          <th>重要度</th>
-          <th>予想</th>
-          <th>前回</th>
-          <th>結果</th>
-          <th>リンク</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for event in events %}
-        <tr>
-          <td>{{ event.time }}</td>
-          <td>{{ event.country_jp_full }}</td>
-          <td>{{ event.name }}</td>
-          {% if event.importance %}
-          <td>{{ event.importance }}</td>
-          {% else %}
-          <td></td>
-          {% endif %}
-          <td>{{ event.prediction }}</td>
-          <td>{{ event.previous }}</td>
-          <td>{{ event.result }}</td>
-          <td><a href="{% url 'events:detail' event.id %}">詳細</a></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
   </div>
   <div class="column">
     {% if option == "edit" %}
     {% if type == "create" %}
-    <form class="" action="{% url 'diary:create' str_date %}" method="post">
+    <form class="" action="{% url 'events:create' event.id %}" method="post">
     {% elif type == "update" %}
-    <form class="" action="{% url 'diary:update' str_date %}" method="post">
+    <form class="" action="{% url 'events:update' event.id %}" method="post">
     {% else %}
-    <form class="" action="{% url 'diary:update' str_date %}" method="post">
+    <form class="" action="{% url 'events:update' event.id %}" method="post">
     {% endif %}
       {% csrf_token %}
       <div class="has-text-right">
@@ -128,19 +94,19 @@
       </div>
       {{ form.media }}
       {% if type == "update" %}
-      {% include 'diary/delete_modal.html' %}
+      {% include 'events/delete_modal.html' %}
       {% endif %}
     </form>
     {% else %}
     <div class="card card-bordered">
       <div class="card-content content">
         {# <h4 class="title is-4 has-text-centered">日記</h4> #}
-        {% if obj == None %}
-        <div class="padding-bottom-10">日記が存在しません．</div>
-        <a href="{% url 'diary:detail' str_date "edit" %}" class="button is-link is-outlined">作成</a>
+        {% if comment == None %}
+        <div class="padding-bottom-10">コメントが存在しません．</div>
+        <a href="{% url 'events:detail' event.id "edit" %}" class="button is-link is-outlined">作成</a>
         {% else %}
-        <div class="padding-all markdownx">{{ obj.get_text_markdownx | safe }}</div>
-        <a href="{% url 'diary:detail' str_date "edit" %}" class="button is-link is-outlined">編集</a>
+        <div class="padding-all markdownx">{{ comment.get_text_markdownx | safe }}</div>
+        <a href="{% url 'events:detail' event.id "edit" %}" class="button is-link is-outlined">編集</a>
         {% endif %}
       </div>
     </div>
@@ -155,10 +121,10 @@
     src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"
 ></script>
 <script>
-  let FETCH_URL_DATA = "/api/get_data_by_date/{{ str_date }}/USDJPY/15T/";
-  let STR_DATE = "{{ str_date }}";
+  let FETCH_URL_DATA = "/api/get_data_by_event/{{ event.id }}/USDJPY/{{ min_interval }}/";
+  let STR_ID = "{{ event.id }}";
 </script>
-<script src="{% static 'js/myChart_by_date.js' %}"></script>
+<script src="{% static 'js/myChart_by_event.js' %}"></script>
 {% else %}
 <script src="{% static 'js/widget.js' %}"></script>
 {% endif %}

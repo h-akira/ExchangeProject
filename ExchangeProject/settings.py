@@ -25,6 +25,7 @@ INSTALLED_APPS = [
   'back.apps.BackConfig',
   'diary.apps.DiaryConfig',
   'home.apps.HomeConfig',
+  'events.apps.EventsConfig',
   'markdownx'
 ]
 
