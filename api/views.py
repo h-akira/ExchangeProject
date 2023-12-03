@@ -48,10 +48,14 @@ def events_json(request):
     else:
       start = e.date.strftime('%Y-%m-%d')
       end = start
+    if importance:
+      title = f"【{dic_omit[e.country]}{e.importance}】{e.name}"
+    else:
+      title = f"【{dic_omit[e.country]}】{e.name}"
     event_list.append(
       {
         'id': e.id,
-        'title': f"【{dic_omit[e.country]}{e.importance}】{e.name}",
+        'title': title,
         'start':start,
         'end':end, 
         'description': e.description,
