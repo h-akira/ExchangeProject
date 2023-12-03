@@ -42,12 +42,13 @@ def main():
   data = json.load(open(options.file, mode="r", encoding=options.encoding))
   for d in data:
     try:
-      if int(d["importance"]) < options.importance:
+      d["importance"] = int(d["importance"])
+      if d["importance"] < options.importance:
         continue
     except ValueError:
       if options.no_importance:
         continue
-      importance = None
+      d["importance"] = None
     date = datetime.datetime.strptime(d["date"], "%Y-%m-%d").date()
     if d["time"] != "":
       time = datetime.datetime.strptime(d["time"], "%H:%M").time()
