@@ -47,6 +47,7 @@ def main():
     except ValueError:
       if options.no_importance:
         continue
+      importance = None
     date = datetime.datetime.strptime(d["date"], "%Y-%m-%d").date()
     if d["time"] != "":
       time = datetime.datetime.strptime(d["time"], "%H:%M").time()
