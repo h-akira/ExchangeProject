@@ -107,7 +107,9 @@ def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datet
   # データベースにデータがあるかどうか確認，なければyfinanceから取得
   # 期間が指定されていない場合はyfinanceを使わず無条件でデータベースにあるものすべてを取得
   dataObjects = ExchangeDataTable.objects.filter(pair=pair.replace("/",""))
-  if start_datetime == None or end_datetime == None:
+  if dataObjects.count() == 0:
+    yf=True
+  elif start_datetime == None or end_datetime == None:
     yf=False
   else:
     latest_result = dataObjects.aggregate(max_dt=Max('dt'))
