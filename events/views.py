@@ -21,9 +21,9 @@ def detail(request,id,option=None):
   dt = datetime.datetime.combine(event.date, event.time)
   dt = pytz.timezone("Asia/Tokyo").localize(dt)
   # yahoo finance APIの仕様上，時間足によっては一定以上以前のデータを取得できないため対応
-  # 30日以上前のデータをすべて自前で用意してあるということを前提とするのであればこの処理は不要
+  # 60日以上前のデータは15分足のものを自前で用意していることを前提としている
   if datetime.datetime.now(datetime.timezone.utc) - dt > datetime.timedelta(days=60):
-    min_interval = "1H"
+    min_interval = "15T"
   elif datetime.datetime.now(datetime.timezone.utc) - dt > datetime.timedelta(days=30):
     min_interval = "5T"
   else:

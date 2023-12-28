@@ -73,7 +73,7 @@ def get_data_by_date(request, date, pair, rule):
   elif "H" in rule:
     days = 60
   elif rule in ["15T", "30T"]:
-    days = 25
+    days = 21
   else:
     # yfinanceの制約で1分足は7日分しか取得できない
     # yfinanceの制約で10分足等は取得できず1分足から変換する
@@ -97,7 +97,6 @@ def get_data_by_event(request, event_id, pair, rule):
   start_datetime = dt - datetime.timedelta(minutes=m*200)
   end_datetime = dt + datetime.timedelta(minutes=m*80)
   data = get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime)
-  # if data["source"] == "My Database":
   return JsonResponse(data, safe=False)
 
 ##############################
@@ -106,8 +105,14 @@ def get_data_by_event(request, event_id, pair, rule):
 def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datetime=None):
   # データベースにデータがあるかどうか確認，なければyfinanceから取得
   # 期間が指定されていない場合はyfinanceを使わず無条件でデータベースにあるものすべてを取得
-  dataObjects = ExchangeDataTable.objects.filter(pair=pair.replace("/",""))
-  if dataObjects.count() == 0:
+  dataObjects = ExchangeDataTable.objects.filter(pair=pair.replace("/","")).order_by("dt")
+  if "T" in rule:
+    m = int(rule.replace("T", ""))
+  else:
+    m = 1500  # 適当な数字
+  if m < 15 or m%15 != 0:
+    yf = True
+  elif dataObjects.count() == 0:
     yf=True
   elif start_datetime == None or end_datetime == None:
     yf=False
@@ -136,6 +141,8 @@ def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datet
     else:
       ticker = f'{pair.replace("/","")}=X'
     df = web.get_data_yahoo(tickers=ticker,start=start_datetime, end=end_datetime, interval=interval)
+    # if df.empty:
+      # return {"source": "Failed download by yahoo finance", "data": []}
     if df.index[0].tzinfo is None:
       df.index = df.index.tz_localize('UTC')
     df.index = df.index.tz_convert('Asia/Tokyo')
@@ -186,10 +193,10 @@ def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datet
         "bb_down_3": row["bb_down_3"]
       }
     )
-    if yf:
-      source = "Yahoo Finance"
-    else:
-      source = "My Database"
+  if yf:
+    source = "Yahoo Finance"
+  else:
+    source = "My Database"
   return {
     "source": source,
     "data": data

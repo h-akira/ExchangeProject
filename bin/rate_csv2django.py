@@ -22,7 +22,16 @@ GMOクリック証券のヒストリカルデータを利用することを想�
   parser.add_argument("--version", action="version", version='%(prog)s 0.0.1')
   parser.add_argument("-i", "--input", metavar="directry", help="rateディレクトリ（NoneならBASE_DIR/data/rate）")
   parser.add_argument("-s", "--start", metavar="日付", help="2023-10-06などの形式の日付（Noneなら現在の50日前）")
-  parser.add_argument("-p", "--pairs", metavar="pair", nargs="*", default=["USDJPY","EURJPY","EURUSD","GBPJPY", "AUDJPY"], help="通貨ペア")
+  parser.add_argument("-p", "--pairs", metavar="pair", nargs="*", default=[
+"USDJPY",
+"EURJPY",
+"EURUSD",
+"GBPJPY",
+"AUDJPY",
+"GBPUSD",
+"EURGBP",
+"AUDUSD"
+], help="通貨ペア")
   parser.add_argument("-r", "--rule", metavar="rule", default="15T", help="時間足")
   # parser.add_argument("-", "--", action="store_true", help="")
   # parser.add_argument("file", metavar="input-file", help="input file")

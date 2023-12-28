@@ -172,6 +172,7 @@ window.addEventListener("resize", () => {
 const currencyPairSelect = document.getElementById('currencyPairSelect');
 const timeframeSelect = document.getElementById('timeframeSelect');
 function updateFetchUrl() {
+  document.getElementById('sourceDisplay').textContent = '...';
   const currencyPair = currencyPairSelect.value;
   const timeframe = timeframeSelect.value;
   FETCH_URL_DATA = `/api/get_data_by_date/${STR_DATE}/${currencyPair}/${timeframe}`;
