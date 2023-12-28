@@ -11,6 +11,7 @@ import datetime
 from pytz import timezone
 import pandas as pd
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from lib.chart import chart
 
 def parse_args():
   import argparse
@@ -20,8 +21,9 @@ GMOクリック証券のヒストリカルデータを利用することを想�
 """, formatter_class = argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument("--version", action="version", version='%(prog)s 0.0.1')
   parser.add_argument("-i", "--input", metavar="directry", help="rateディレクトリ（NoneならBASE_DIR/data/rate）")
-  parser.add_argument("-s", "--start", metavar="日付", help="2023-10-06などの形式の日付（Noneなら現在の7日前）")
+  parser.add_argument("-s", "--start", metavar="日付", help="2023-10-06などの形式の日付（Noneなら現在の50日前）")
   parser.add_argument("-p", "--pairs", metavar="pair", nargs="*", default=["USDJPY","EURJPY","EURUSD","GBPJPY", "AUDJPY"], help="通貨ペア")
+  parser.add_argument("-r", "--rule", metavar="rule", default="15T", help="時間足")
   # parser.add_argument("-", "--", action="store_true", help="")
   # parser.add_argument("file", metavar="input-file", help="input file")
   options = parser.parse_args()
@@ -61,6 +63,9 @@ def GMO_dir2DataFrame(dir_name,pair="USDJPY",date_range=None, BID_ASK="BID"):
       else:
         continue
     df = pd.concat([df,GMO_csv2DataFrame(file,BID_ASK=BID_ASK)])
+  if len(df) == 0:
+    print(dir_name, pair, date_range)
+    raise Exception("No Data")
   df = df.sort_values(by="date", ascending=True)
   return df
 
@@ -93,10 +98,9 @@ def main():
   django.setup()
   from django.conf import settings
   from api.models import ExchangeDataTable
-
   now = datetime.datetime.now()-datetime.timedelta(hours=6)
   if options.start == None:
-    options.start = now - datetime.timedelta(days=7)
+    options.start = now - datetime.timedelta(days=50)
   else:
     options.start = datetime.datetime.strptime(options.start, "%Y-%m-%d")
   date_range = (options.start.date(), (now + datetime.timedelta(days=1)).date())
@@ -108,6 +112,7 @@ def main():
       pair=pair,
       date_range=date_range
     ) 
+    df = chart.resample(df, rule=options.rule)
     dict_list = [{'dt': index, **row.to_dict()} for index, row in df.iterrows()]
     obj_list = []
     for d in dict_list:
