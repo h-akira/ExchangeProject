@@ -29,7 +29,6 @@ GMOクリック証券のヒストリカルデータを利用することを想�
 "GBPJPY",
 "AUDJPY",
 "GBPUSD",
-"EURGBP",
 "AUDUSD"
 ], help="通貨ペア")
   parser.add_argument("-r", "--rule", metavar="rule", default="15T", help="時間足")

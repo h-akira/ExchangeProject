@@ -32,7 +32,7 @@ def main():
     if "y" == input("ExchangeDataTableを本当に削除しますか？(y/n) >> "):
       from api.models import ExchangeDataTable
       # 容量超過対策
-      pairs = ["AUDJPY", "AUDUSD", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY", "EURGBP"]
+      pairs = ["AUDJPY","AUDUSD", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"]
       for pair in pairs:
         data = ExchangeDataTable.objects.filter(pair=pair)
         if data.exists():
