@@ -5,7 +5,7 @@ certifi==2023.11.17
 charset-normalizer==3.3.2
 contourpy==1.2.0
 cycler==0.12.1
-Django==5.0
+Django==4.2.6
 django-boost==2.1
 django-markdownx==4.0.7
 ExchangeLibrary @ git+https://github.com/h-akira/ExchangeLibrary.git@42a6fb3d283991f3ca2c9aaba99be2d6d3129902
