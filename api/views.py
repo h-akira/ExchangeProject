@@ -12,8 +12,8 @@ from django.db.models import Q, Max, Min
 import pandas_datareader.data as web
 import yfinance as yf
 yf.pdr_override()
-# 独自関数
-import chart.chart
+from ExchangePackage import chart
+
 
 # GPT先生に考えてもらった色
 COLOR = {
@@ -147,7 +147,7 @@ def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datet
       df.index = df.index.tz_localize('UTC')
     df.index = df.index.tz_convert('Asia/Tokyo')
     if resample:
-      df = chart.chart.resample(df, rule)
+      df = chart.resample(df, rule)
   else:
     print("get data from database")
     if start_datetime == None and end_datetime == None:
@@ -164,16 +164,16 @@ def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datet
     df['dt'] = df['dt'].dt.tz_convert('Asia/Tokyo')
     df = df.drop(columns=['id', 'pair'])
     df.set_index('dt', inplace=True)
-    df = chart.chart.resample(df, rule)
-  df = chart.chart.add_BBands(
+    df = chart.resample(df, rule)
+  df = chart.add_BBands(
     df,20,2,0,name={"up":"bb_up_2", "middle":"bb_middle", "down":"bb_down_2"}
   )
-  df = chart.chart.add_BBands(
+  df = chart.add_BBands(
     df,20,3,0,name={"up":"bb_up_3", "middle":"bb_middle", "down":"bb_down_3"}
   )
-  df = chart.chart.add_SMA(df, sma1, "SMA1")
-  df = chart.chart.add_SMA(df, sma2, "SMA2") 
-  df = chart.chart.add_SMA(df, sma3, "SMA3")
+  df = chart.add_SMA(df, sma1, "SMA1")
+  df = chart.add_SMA(df, sma2, "SMA2") 
+  df = chart.add_SMA(df, sma3, "SMA3")
   df = df.dropna() 
   data = []
   for index, row in df.iterrows():

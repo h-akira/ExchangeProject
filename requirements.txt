@@ -30,3 +30,4 @@ urllib3==2.1.0
 user-agents==2.2.0
 webencodings==0.5.1
 yfinance==0.2.31
+ExchangeLibrary @ git+https://github.com/h-akira/ExchangeLibrary.git@ecee803d819cea9108e213ea80edf7af936ea0aa
