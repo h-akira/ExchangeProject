@@ -6,7 +6,7 @@ from markdownx.utils import markdownify
 
 class DiaryTable(models.Model):
   user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
-  date = models.DateField(unique=True)
+  date = models.DateField()
   text = MarkdownxField(null=True, blank=True)
   def get_text_markdownx(self):
     return mark_safe(markdownify(self.text))
