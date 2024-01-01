@@ -11,7 +11,7 @@ import datetime
 from pytz import timezone
 import pandas as pd
 from ExchangePackage import chart
-sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 def parse_args():
   import argparse

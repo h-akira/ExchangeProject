@@ -33,10 +33,11 @@ def main():
   from django.conf import settings
   from api.models import EventTable
   from accounts.models import CustomUser
-  if not options.username and not options.yes:
-    if "y" != input("usernameが指定されていませんが構いませんか？(y/other):"):
-      sys.exit()
+  if not options.username:
     user = None
+    if not options.yes:
+      if "y" != input("usernameが指定されていませんが構いませんか？(y/other):"):
+        sys.exit()
   else:
     user = CustomUser.objects.get(username=options.username)
   data = json.load(open(options.file, mode="r", encoding=options.encoding))
