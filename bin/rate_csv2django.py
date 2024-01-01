@@ -10,8 +10,8 @@ import re
 import datetime
 from pytz import timezone
 import pandas as pd
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from lib.chart import chart
+from ExchangePackage import chart
+sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 
 def parse_args():
   import argparse
