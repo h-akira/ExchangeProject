@@ -20,7 +20,7 @@ def parse_args():
   parser.add_argument("-u", "--username", metavar="username", help="username")
   parser.add_argument("--importance", metavar="importance", type=int, default=4, help="重要度がある場合は指定した重要度以上の経済指標のみ取得する")
   parser.add_argument("--no-importance", action="store_true", help="重要度が無い経済指標を取得しない")
-  # parser.add_argument("-", "--", action="store_true", help="")
+  parser.add_argument("-y", "--yes", action="store_true", help="usernameが指定されていない場合に確認を省略する")
   parser.add_argument("file", metavar="input-file", help="json file")
   options = parser.parse_args()
   return options
@@ -33,7 +33,7 @@ def main():
   from django.conf import settings
   from api.models import EventTable
   from accounts.models import CustomUser
-  if not options.username:
+  if not options.username and not options.yes:
     if "y" != input("usernameが指定されていませんが構いませんか？(y/other):"):
       sys.exit()
     user = None
