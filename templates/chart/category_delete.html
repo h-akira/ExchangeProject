@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}削除{% endblock title %}
+{% block content %}
+  <h2 class="title is-2 has-text-centered">
+    {{ object.name }}を削除しますか？
+  </h2>
+  <form method="post">
+    {% csrf_token %}
+    <button class="button is-danger" type="submit">削除</button>
+    <a href="{% url 'chart:index' %}" class="button is-info">キャンセル</a>
+  </form>
+{% endblock %}
