@@ -22,6 +22,7 @@ INSTALLED_APPS = [
   'diary.apps.DiaryConfig',
   'home.apps.HomeConfig',
   'events.apps.EventsConfig',
+  'chart.apps.ChartConfig',
   'markdownx'
 ]
 

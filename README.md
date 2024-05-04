@@ -39,6 +39,9 @@ Djangoを用いて為替関係の情報の取りまとめや振り返り
 環境によっては（特に無料プランの場合）データベースの容量的に1分足を保存するのは困難であるため，
 15分足を保存する．1分足や5分足はYahoo Financeのデータを用いる．
 
+# その他
+- Python3.12以降でdistutilsが削除されたため，`setuptools`をインストールする必要があるようだ．`requirements.txt`には追加した（2024-5-5）．
+
 ## 関連リポジトリ
 - https://github.com/h-akira/FX-Note
 - https://github.com/h-akira/PrivateChart

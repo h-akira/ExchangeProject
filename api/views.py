@@ -79,7 +79,7 @@ def get_data_by_date(request, date, pair, rule):
     # yfinanceの制約で10分足等は取得できず1分足から変換する
     days = 7
   start_datetime = end_datetime - datetime.timedelta(days=days)
-  data = get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime)
+  data = _get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime)
   return JsonResponse(data, safe=False)
 
 def get_data_by_event(request, event_id, pair, rule):
@@ -96,37 +96,59 @@ def get_data_by_event(request, event_id, pair, rule):
     return JsonResponse({}, safe=False)
   start_datetime = dt - datetime.timedelta(minutes=m*200)
   end_datetime = dt + datetime.timedelta(minutes=m*80)
-  data = get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime)
+  data = _get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime)
+  return JsonResponse(data, safe=False)
+
+def get_latest_data_by_yf(request, pair, rule):
+  # date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+  # end_datetime = datetime.datetime.combine(date, datetime.time(21,0))
+  end_datetime = datetime.datetime.utcnow()
+  end_datetime = pytz.utc.localize(end_datetime)
+  if "D" in rule:
+    days = 250
+  elif "H" in rule:
+    days = 60
+  elif rule in ["15T", "30T"]:
+    days = 21
+  else:
+    # yfinanceの制約で1分足は7日分しか取得できない
+    # yfinanceの制約で10分足等は取得できず1分足から変換する
+    days = 7
+  start_datetime = end_datetime - datetime.timedelta(days=days)
+  data = _get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime, yf_must=True)
   return JsonResponse(data, safe=False)
 
 ##############################
 ########## Function ##########
 ##############################
-def get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datetime=None):
+def _get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datetime=None, yf_must=False):
   # データベースにデータがあるかどうか確認，なければyfinanceから取得
   # 期間が指定されていない場合はyfinanceを使わず無条件でデータベースにあるものすべてを取得
-  dataObjects = ExchangeDataTable.objects.filter(pair=pair.replace("/","")).order_by("dt")
   if "T" in rule:
     m = int(rule.replace("T", ""))
   else:
     m = 1500  # 適当な数字
-  if m < 15 or m%15 != 0:
+  if yf_must:
     yf = True
-  elif dataObjects.count() == 0:
-    yf=True
-  elif start_datetime == None or end_datetime == None:
-    yf=False
   else:
-    latest_result = dataObjects.aggregate(max_dt=Max('dt'))
-    latest_date = latest_result['max_dt'].date() if latest_result['max_dt'] else None
-    oldest_result = dataObjects.aggregate(min_dt=Min('dt'))
-    oldest_date = oldest_result['min_dt'].date() if oldest_result['min_dt'] else None
-    if latest_date == None or oldest_date == None:
+    dataObjects = ExchangeDataTable.objects.filter(pair=pair.replace("/","")).order_by("dt")
+    if m < 15 or m%15 != 0:
+      yf = True
+    elif dataObjects.count() == 0:
       yf=True
-    elif latest_date < end_datetime.date() or oldest_date > start_datetime.date():
-      yf=True
-    else:
+    elif start_datetime == None or end_datetime == None:
       yf=False
+    else:
+      latest_result = dataObjects.aggregate(max_dt=Max('dt'))
+      latest_date = latest_result['max_dt'].date() if latest_result['max_dt'] else None
+      oldest_result = dataObjects.aggregate(min_dt=Min('dt'))
+      oldest_date = oldest_result['min_dt'].date() if oldest_result['min_dt'] else None
+      if latest_date == None or oldest_date == None:
+        yf=True
+      elif latest_date < end_datetime.date() or oldest_date > start_datetime.date():
+        yf=True
+      else:
+        yf=False
   if yf:
     print("get data from yfinance")
     # intervalは1, 2, 5, 15, 30, 60, 1h, 1d, 1wk, 1mo, 3moに対応するらしい

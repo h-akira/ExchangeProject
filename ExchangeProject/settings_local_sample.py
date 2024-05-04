@@ -3,7 +3,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-{}'
+SECRET_KEY = 'django-insecure-mgb23o9h0b5jne^1wsde7iv^oo0sfwjp&0uqt&w7uuzo2fwq5e'
 # 以下の手順で生成する
 # python3 manage.py shell
 # from django.core.management.utils import get_random_secret_key

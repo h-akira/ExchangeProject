@@ -1,0 +1,57 @@
+<!-- TradingView Widget BEGIN -->
+<!-- <select id="currencyPairSelect"> -->
+<!--   <option value="OANDA/USDJPY" selected>USDJPY</option> -->
+<!--   <option value="OANDA/EURJPY">EURJPY</option> -->
+<!--   <option value="OANDA/EURUSD">EURUSD</option> -->
+<!--   <option value="OANDA/GBPJPY">GBPJPY</option> -->
+<!--   <option value="OANDA/GBPUSD">GBPUSD</option> -->
+<!--   <option value="OANDA/AUDJPY">AUDJPY</option> -->
+<!--   <option value="OANDA/AUDUSD">AUDUSD</option> -->
+<!--   <option value="CAPITALCOM:DXY">DXY</option> -->
+<!-- </select> -->
+<select id="indicatorSelect">
+  <option value="Ichimoku" selected>一目均衡表</option>
+  <option value="Bollinger_SMA">BB+SMA</option>
+</select>
+<div class="tradingview-widget-container" id="tradingview-widget-container">
+  <div id="tradingview_6feaf"></div>
+  <div class="tradingview-widget-copyright"><a href="https://jp.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">TradingViewですべてのマーケットを追跡</span></a></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <script type="text/javascript">
+    let currentSymbol = "OANDA:USDJPY"; // 初期値
+    let currentStudy = "Ichimoku"; // 初期値
+    let currentHeight = "700"; // 初期値，px
+    const createWidget = (symbol, study, height) => {
+      let studiesArray = [];
+      if (study === "Ichimoku") {
+        studiesArray = ["STD;Ichimoku%1Cloud"];
+      } else if (study === "Bollinger_SMA") {
+        studiesArray = ["STD;Bollinger_Bands", "STD;SMA"];
+      }
+      return new TradingView.widget({
+        "width": "100%",
+        "height": height + "px",
+        "symbol": symbol,
+        "interval": "D",
+        "timezone": "Asia/Tokyo",
+        "theme": "light",
+        "style": "1",
+        "locale": "ja",
+        "details": true,
+        "enable_publishing": false,
+        "allow_symbol_change": true,
+        "studies": studiesArray,
+        "container_id": "tradingview_6feaf"
+      });
+    };
+    let widget = createWidget(currentSymbol, currentStudy, currentHeight);
+  </script>
+</div>
+<div
+  id="resizer"
+  style="height: 10px; background: #ccc; cursor: ns-resize;">
+</div>
+<div class="padding-all">
+  <br>
+</div>
+<!-- TradingView Widget END -->

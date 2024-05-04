@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}チャート{% endblock title %}
+{% block extra_css %}
+{% endblock extra_css %}
+{% block content %}
+<h2 class="title is-2 has-text-centered">
+  チャート
+</h2>
+{% for category in categories %}
+  {% if category_number == forloop.counter0 %}
+  <a href="{% url 'chart:chart' forloop.counter0%}" class="button is-link">
+  {% else %}
+  <a href="{% url 'chart:chart' forloop.counter0 %}" class="button is-info">
+  {% endif %}
+    {{ category.name }}
+  </a>
+{% endfor %}
+{# <div class="column is-two-thirds" id="includeChart"> #}
+{#   <select id="currencyPairSelect"> #}
+{#     <option value="USDJPY" selected>USDJPY</option> #}
+{#     <option value="EURJPY">EURJPY</option> #}
+{#     <option value="EURUSD">EURUSD</option> #}
+{#     <option value="GBPJPY">GBPJPY</option> #}
+{#     <option value="GBPUSD">GBPUSD</option> #}
+{#     <option value="AUDJPY">AUDJPY</option> #}
+{#     <option value="AUDUSD">AUDUSD</option> #}
+{#     <option value="^N225">N225</option> #}
+{#     <option value="^DJI">DJI</option> #}
+{#     <option value="^TNX">TNX</option> #}
+{#   </select> #}
+{#   <select id="timeframeSelect"> #}
+{#     <option value="1T">1分足</option> #}
+{#     <option value="5T">5分足</option> #}
+{#     <option value="10T">10分足</option> #}
+{#     <option value="15T" selected>15分足</option> #}
+{#     <option value="30T">30分足</option> #}
+{#     <option value="1H">1時間足</option> #}
+{#     <option value="4H">4時間足</option> #}
+{#   </select> #}
+{#   SMA(9, 20, 60) and Bollinger Bands(20, 2 and 3), #}
+{#   Data from <span id="sourceDisplay">..</span>. #}
+{#   <div #}
+{#     id="container" #}
+{#     style="width: 100%; height: 600px;" #}
+{#     class="content" #}
+{#    ></div> #}
+{#   <div #}
+{#     id="resizer" #}
+{#     style="height: 10px; background: #ccc; cursor: ns-resize;" #}
+{#   ></div> #}
+{#   <br> #}
+{#   {% else %} #}
+{#   <p> #}
+{#     Since it is the current day, the TradingView widget will be displayed. #}
+{#   </p> #}
+{#   {% include 'diary/USDJPY15T.html' %} #}
+{#   <br> #}
+{#   {% endif %} #}
+{# </div> #}
+{% endblock content %}
+{# {% block extra_js %} #}
+{# {% if is_data %} #}
+{# <script #}
+{#     type="text/javascript" #}
+{#     src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js" #}
+{# ></script> #}
+{# <script> #}
+{#   let FETCH_URL_DATA = "/api/get_data_by_date/{{ str_date }}/USDJPY/15T/"; #}
+{#   let STR_DATE = "{{ str_date }}"; #}
+{# </script> #}
+{# <script src="{% static 'js/myChart_by_date.js' %}"></script> #}
+{# {% else %} #}
+{# <script src="{% static 'js/widget.js' %}"></script> #}
+{# {% endif %} #}
+{# <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script> #}
+{# <script>hljs.initHighlightingOnLoad();</script> #}
+{# {% if option == "edit" %} #}
+{# <script src="{% static 'js/textarea.js' %}"></script> #}
+{# {% endif %} #}
+{# {%if type == "update" %} #}
+{# <script src="{% static 'js/modal.js' %}"></script> #}
+{# {% endif %} #}
+{# {% endblock extra_js %} #}

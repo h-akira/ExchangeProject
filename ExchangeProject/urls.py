@@ -27,6 +27,7 @@ urlpatterns = [
   path('diary/',include('diary.urls')),
   path('events/',include('events.urls')),
   path('api/',include('api.urls')),
+  path('chart/',include('chart.urls')),
   path('markdownx/', include('markdownx.urls')), 
   path('',include('home.urls')),
 ]
