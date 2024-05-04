@@ -8,7 +8,7 @@
   チャート
 </h2>
 {% for category in categories %}
-  {% if category_number == forloop.counter %}
+  {% if category_number == category.id %}
   <a href="{% url 'chart:category' category.id %}" class="button is-link">
   {% else %}
   <a href="{% url 'chart:category' category.id %}" class="button is-info">
