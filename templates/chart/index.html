@@ -8,14 +8,20 @@
   チャート
 </h2>
 {% for category in categories %}
-  {% if category_number == forloop.counter0 %}
-  <a href="{% url 'chart:chart' forloop.counter0%}" class="button is-link">
+  {% if category_number == forloop.counter %}
+  <a href="{% url 'chart:category' forloop.counter%}" class="button is-link">
   {% else %}
-  <a href="{% url 'chart:chart' forloop.counter0 %}" class="button is-info">
+  <a href="{% url 'chart:category' forloop.counter %}" class="button is-info">
   {% endif %}
     {{ category.name }}
   </a>
 {% endfor %}
+<a href="{% url 'chart:category_update' category_number %}" class="button is-success">
+  編集
+</a>
+<a href="{% url 'chart:category_create' %}" class="button is-success">
+  追加
+</a>
 {# <div class="column is-two-thirds" id="includeChart"> #}
 {#   <select id="currencyPairSelect"> #}
 {#     <option value="USDJPY" selected>USDJPY</option> #}
