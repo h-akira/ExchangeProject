@@ -4,12 +4,13 @@ from django.contrib.auth.decorators import login_required
 from .models import ChartTable, CategoryTable,LinkTable
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Max
 
 @login_required
 def index(request, category_number=1):
   categories = CategoryTable.objects.filter(user=request.user)
   if category_number != 1:
-    if category_number > categories.count():
+    if category_number > categories.aggregate(Max('id'))['id__max']:
       return redirect('chart:index')
   if categories.exists():
     for i, category in enumerate(categories):

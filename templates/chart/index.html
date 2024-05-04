@@ -9,9 +9,9 @@
 </h2>
 {% for category in categories %}
   {% if category_number == forloop.counter %}
-  <a href="{% url 'chart:category' forloop.counter%}" class="button is-link">
+  <a href="{% url 'chart:category' category.id %}" class="button is-link">
   {% else %}
-  <a href="{% url 'chart:category' forloop.counter %}" class="button is-info">
+  <a href="{% url 'chart:category' category.id %}" class="button is-info">
   {% endif %}
     {{ category.name }}
   </a>
