@@ -10,6 +10,11 @@ urlpatterns = [
     name="get_data_by_date"
   ),
   path(
+    "get_latest_data_by_yf/<str:pair>/<str:rule>/",
+    views.get_latest_data_by_yf,
+    name="get_latest_data_by_yf"
+  ),
+  path(
     "get_data_by_event/<int:event_id>/<str:pair>/<str:rule>/",
     views.get_data_by_event,
     name="get_data_by_event"

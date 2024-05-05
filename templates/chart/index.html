@@ -7,84 +7,148 @@
 <h2 class="title is-2 has-text-centered">
   チャート
 </h2>
-{% for category in categories %}
-  {% if category_number == category.id %}
-  <a href="{% url 'chart:category' category.id %}" class="button is-link">
-  {% else %}
-  <a href="{% url 'chart:category' category.id %}" class="button is-info">
-  {% endif %}
-    {{ category.name }}
+<p>
+  {% for category in categories %}
+    {% if category_number == category.id %}
+    <a href="{% url 'chart:category' category.id %}" class="button is-link">
+    {% else %}
+    <a href="{% url 'chart:category' category.id %}" class="button is-info">
+    {% endif %}
+      {{ category.name }}
+    </a>
+  {% endfor %}
+  <a href="{% url 'chart:category_update' category_number %}" class="button is-success">
+    編集
   </a>
-{% endfor %}
-<a href="{% url 'chart:category_update' category_number %}" class="button is-success">
-  編集
-</a>
-<a href="{% url 'chart:category_create' %}" class="button is-success">
-  追加
-</a>
-{# <div class="column is-two-thirds" id="includeChart"> #}
-{#   <select id="currencyPairSelect"> #}
-{#     <option value="USDJPY" selected>USDJPY</option> #}
-{#     <option value="EURJPY">EURJPY</option> #}
-{#     <option value="EURUSD">EURUSD</option> #}
-{#     <option value="GBPJPY">GBPJPY</option> #}
-{#     <option value="GBPUSD">GBPUSD</option> #}
-{#     <option value="AUDJPY">AUDJPY</option> #}
-{#     <option value="AUDUSD">AUDUSD</option> #}
-{#     <option value="^N225">N225</option> #}
-{#     <option value="^DJI">DJI</option> #}
-{#     <option value="^TNX">TNX</option> #}
-{#   </select> #}
-{#   <select id="timeframeSelect"> #}
-{#     <option value="1T">1分足</option> #}
-{#     <option value="5T">5分足</option> #}
-{#     <option value="10T">10分足</option> #}
-{#     <option value="15T" selected>15分足</option> #}
-{#     <option value="30T">30分足</option> #}
-{#     <option value="1H">1時間足</option> #}
-{#     <option value="4H">4時間足</option> #}
-{#   </select> #}
-{#   SMA(9, 20, 60) and Bollinger Bands(20, 2 and 3), #}
-{#   Data from <span id="sourceDisplay">..</span>. #}
-{#   <div #}
-{#     id="container" #}
-{#     style="width: 100%; height: 600px;" #}
-{#     class="content" #}
-{#    ></div> #}
-{#   <div #}
-{#     id="resizer" #}
-{#     style="height: 10px; background: #ccc; cursor: ns-resize;" #}
-{#   ></div> #}
-{#   <br> #}
-{#   {% else %} #}
-{#   <p> #}
-{#     Since it is the current day, the TradingView widget will be displayed. #}
-{#   </p> #}
-{#   {% include 'diary/USDJPY15T.html' %} #}
-{#   <br> #}
-{#   {% endif %} #}
-{# </div> #}
+  <a href="{% url 'chart:category_create' %}" class="button is-success">
+    追加
+  </a>
+</p>
+{% if charts %}
+<p>
+  {% for chart in charts %}
+  {% if forloop.first %}
+  <script type="text/javascript">
+    let currentSource = "{{ chart.source }}";  // 初期値
+    let currentSymbol = "{{ chart.symbol }}";  // 初期値
+  </script>
+  <select id="currencyPairSelect">
+    <option value="{{ chart.source }},{{ chart.symbol }}" selected>{{ chart.name }}</option>
+  {% else %}
+    <option value="{{ chart.source }},{{ chart.symbol }}">{{ chart.name }}</option>
+  {% endif %}
+    {# <option value="OANDA/USDJPY" selected>USDJPY</option> #}
+    {# <option value="OANDA/EURJPY">EURJPY</option> #}
+    {# <option value="CAPITALCOM:DXY">DXY</option> #}
+  {% endfor %}
+  </select>
+</p>
+{% else %}
+<p>
+  登録されているチャートはありません。
+</p>
+{% endif %}
+<p id="selectForYahooFinance">
+  <select id="timeframeSelect">
+    <option value="1T">1分足</option>
+    <option value="5T">5分足</option>
+    <option value="10T">10分足</option>
+    <option value="15T">15分足</option>
+    <option value="30T">30分足</option>
+    <option value="1H">1時間足</option>
+    <option value="4H">4時間足</option>
+    <option value="1D" selected>日足</option>
+  </select>
+  SMA(9, 20, 60) and Bollinger Bands(20, 2 and 3),
+  Loading <span id="sourceDisplay">...</span>.
+</p>
+<p id="selectForTradinfview">
+  <select id="indicatorSelect">
+    <option value="Ichimoku" selected>一目均衡表</option>
+    <option value="Bollinger_SMA">BB+SMA</option>
+  </select>
+</p>
+<div class="tradingview-widget-container" id="tradingview-widget-container">
+  <div id="tradingview_6feaf"></div>
+  <div class="tradingview-widget-copyright"><a href="https://jp.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">TradingViewですべてのマーケットを追跡</span></a></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <script type="text/javascript">
+    let currentStudy = "Ichimoku"; // 初期値
+    let currentHeight = "700"; // 初期値，px
+    const createWidget = (symbol, study, height) => {
+      let studiesArray = [];
+      if (study === "Ichimoku") {
+        studiesArray = ["STD;Ichimoku%1Cloud"];
+      } else if (study === "Bollinger_SMA") {
+        studiesArray = ["STD;Bollinger_Bands", "STD;SMA"];
+      }
+      return new TradingView.widget({
+        "width": "100%",
+        "height": height + "px",
+        "symbol": symbol,
+        "interval": "D",
+        "timezone": "Asia/Tokyo",
+        "theme": "light",
+        "style": "1",
+        "locale": "ja",
+        "details": true,
+        "enable_publishing": false,
+        "allow_symbol_change": true,
+        "studies": studiesArray,
+        "container_id": "tradingview_6feaf"
+      });
+    };
+    {# if (currentSource === "tradingview") { #}
+    {#   let widget = createWidget(currentSymbol, currentStudy, currentHeight); #}
+    {# } #}
+  </script>
+</div>
+<div
+  id="container"
+  style="width: 100%; height: 600px;"
+  class="content"
+ ></div>
+{# <script> #}
+{#   if (currentSource == "yahoo finance") { #}
+{#     alert("yahoo finance"); #}
+{#     let FETCH_URL_DATA = "/api/get_latest_data_by_yf/"+currencyPair+"/1D/"; #}
+{#     document.getElementById("selectForTradinfview").style.display = "none"; #}
+{#     document.getElementById("selectForYahooFinance").style.display = "block"; #}
+{#     document.getElementById("tradingview-widget-container").style.display = "none"; #}
+{#     document.getElementById("container").style.display = "block"; #}
+{#   } else if (currentSource == "tradingview") { #}
+{#     alert("tradingview"); #}
+{#     let widget = createWidget(currentSymbol, currentStudy, currentHeight); #}
+{#     document.getElementById("selectForTradinfview").style.display = "block"; #}
+{#     document.getElementById("selectForYahooFinance").style.display = "none"; #}
+{#     document.getElementById("tradingview-widget-container").style.display = "block"; #}
+{#     document.getElementById("container").style.display = "none"; #}
+{#   } else { #}
+{#     aleart("none"); #}
+{#     document.getElementById("selectForTradinfview").style.display = "none"; #}
+{#     document.getElementById("selectForYahooFinance").style.display = "none"; #}
+{#     document.getElementById("tradingview-widget-container").style.display = "none"; #}
+{#     document.getElementById("container").style.display = "none"; #}
+{#   } #}
+{# </script> #}
+<div
+  id="resizer"
+  style="height: 10px; background: #ccc; cursor: ns-resize;">
+</div>
+
+{# chart.destroy(); #}
+
 {% endblock content %}
-{# {% block extra_js %} #}
-{# {% if is_data %} #}
+{% block extra_js %}
 {# <script #}
-{#     type="text/javascript" #}
-{#     src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js" #}
+{#   type="text/javascript" #}
+{#   src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js" #}
 {# ></script> #}
 {# <script> #}
-{#   let FETCH_URL_DATA = "/api/get_data_by_date/{{ str_date }}/USDJPY/15T/"; #}
-{#   let STR_DATE = "{{ str_date }}"; #}
+  {# let FETCH_URL_DATA = "/api/get_data_by_date/{{ str_date }}/{{}}/1D/"; #}
+  {# let STR_DATE = "{{ str_date }}"; #}
 {# </script> #}
-{# <script src="{% static 'js/myChart_by_date.js' %}"></script> #}
-{# {% else %} #}
-{# <script src="{% static 'js/widget.js' %}"></script> #}
-{# {% endif %} #}
+<script src="{% static 'js/chart.js' %}"></script>
 {# <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script> #}
 {# <script>hljs.initHighlightingOnLoad();</script> #}
-{# {% if option == "edit" %} #}
-{# <script src="{% static 'js/textarea.js' %}"></script> #}
-{# {% endif %} #}
-{# {%if type == "update" %} #}
-{# <script src="{% static 'js/modal.js' %}"></script> #}
-{# {% endif %} #}
-{# {% endblock extra_js %} #}
+{% endblock extra_js %}

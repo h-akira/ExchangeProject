@@ -16,9 +16,12 @@ def index(request, category_number=1):
     for i, category in enumerate(categories):
       if i == category_number:
         charts = ChartTable.objects.filter(category=category)
+  else:
+    charts = None
   context = {
     'categories': categories,
     'category_number': category_number,
+    'charts': charts,
   }
   return render(request, 'chart/index.html', context)
 
