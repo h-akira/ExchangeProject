@@ -1,4 +1,8 @@
 // Description: This file contains the code for the trading view chart.
+let widget;
+let FETCH_URL_DATA
+let fetchFirst = true;
+
 
 // Get the date from the url 
 function fetchChartData() {
@@ -46,16 +50,137 @@ function fetchChartData() {
     });
 }
 
-let widget
-let chart
+// Create the Lightweight Chart within the container element
+const chart = LightweightCharts.createChart(document.getElementById('container'),{
+  markers: {
+    visible: false,
+  },
+  crosshair: {
+    mode: LightweightCharts.CrosshairMode.Normal, 
+    vertLine: {
+      visible: true,
+      labelVisible: true,
+    },
+    horzLine: {
+      visible: true,
+      labelVisible: true,
+    },
+  },
+});
+
+// add
+chart.timeScale().applyOptions({
+  timeVisible: true,
+  secondsVisible: false,
+});
+
+// Create the Main Series (Candlesticks)
+const mainSeries = chart.addCandlestickSeries();
+
+const sma1Series = chart.addLineSeries({
+  color: '#B8860B',
+  lineWidth: 1,
+  lastValueVisible: false,
+  priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
+});
+
+const sma2Series = chart.addLineSeries({
+  color: '#0000FF',
+  lineWidth: 1,
+  lastValueVisible: false,
+  priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
+});
+
+const sma3Series = chart.addLineSeries({
+  color: '#006400',
+  lineWidth: 1,
+  lastValueVisible: false,
+  priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
+});
+
+const bbUp2Series = chart.addLineSeries({
+  color: '#FF00FF',
+  lineWidth: 1,
+  lastValueVisible: false,
+  priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
+});
+
+const bbDown2Series = chart.addLineSeries({
+  color: '#FF00FF',
+  lineWidth: 1,
+  lastValueVisible: false,
+  priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
+});
+
+const bbUp3Series = chart.addLineSeries({
+  color: '#C71585',
+  lineWidth: 1,
+  lastValueVisible: false,
+  priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
+});
+
+const bbDown3Series = chart.addLineSeries({
+  color: '#C71585',
+  lineWidth: 1,
+  lastValueVisible: false,
+  priceLineVisible: false,
+  priceFormat: {
+    type: 'volume',
+    precision: 0
+  },
+  crosshairMarkerVisible: false,
+});
+
+const timeframeSelect = document.getElementById('timeframeSelect');
+
+function updateFetchUrl() {
+  document.getElementById('sourceDisplay').textContent = '...';
+  const timeframe = timeframeSelect.value;
+  FETCH_URL_DATA = `/api/get_latest_data_by_yf/${currentSymbol}/${timeframe}`;
+  fetchChartData();
+}
+
+timeframeSelect.addEventListener('change', updateFetchUrl);
 
 if (currentSource == "yahoo finance") {
   // alert("yahoo finance");
-  let FETCH_URL_DATA = "/api/get_latest_data_by_yf/"+currencyPair+"/1D/";
+  FETCH_URL_DATA = "/api/get_latest_data_by_yf/"+currencyPair+"/1D/";
+  fetchFirst = false;
   document.getElementById("selectForTradinfview").style.display = "none";
   document.getElementById("selectForYahooFinance").style.display = "block";
   document.getElementById("tradingview-widget-container").style.display = "none";
   document.getElementById("container").style.display = "block";
+  fetchChartData();
 } else if (currentSource == "tradingview") {
   // alert("tradingview");
   widget = createWidget(currentSymbol, currentStudy, currentHeight);
@@ -75,23 +200,44 @@ if (currentSource == "yahoo finance") {
 document.getElementById('currencyPairSelect').addEventListener('change', (e) => {
   const selectedInfo = e.target.value.replace('/', ':'); // OANDA/USDJPY -> OANDA:USDJPY
   const [selectedSource, selectedSymbol] = selectedInfo.split(',');
-  if (selectedSymbol !== currentSymbol && selectedSource === currentSource) {
+  if (selectedSymbol != currentSymbol || selectedSource != currentSource) {
     if ( currentSource === 'tradingview'){
       widget.remove(); // 古いウィジェットを削除
-    } else if ( currentSource === 'yahoo finance' ) {
-      chart.destory();
+    // } else if ( currentSource === 'yahoo finance' ) {
+      // chart.destory();
     }
-    if ( selectedSource === 'tradingview' ) {
+    if ( selectedSource == 'tradingview' ) {
+      alert("tradingview");
       widget = createWidget(selectedSymbol, currentStudy, currentHeight); // 新しいウィジェットを作成
-      currentSymbol = selectedSymbol;
-      currentSource = selectedSource;
-    }else if ( selectedSource === 'yahoo finance' ) {
-      chart.destory();
-      currentSymbol = selectedSymbol;
-      currentSource = selectedSource;
+      document.getElementById("selectForTradinfview").style.display = "block";
+      document.getElementById("selectForYahooFinance").style.display = "none";
+      document.getElementById("tradingview-widget-container").style.display = "block";
+      document.getElementById("container").style.display = "none";
+      // currentSymbol = selectedSymbol;
+      // currentSource = selectedSource;
+    }else if ( selectedSource == 'yahoo finance' ) {
+      alert("yahoo finance");
+      FETCH_URL_DATA = "/api/get_latest_data_by_yf/"+selectedSymbol+"/1D/";
+      alert(FETCH_URL_DATA);
+      // chart.destory();
+      if (fetchFirst) {
+        fetchFirst = false;
+        alert("fetchFirst");
+        fetchChartData();
+      }else{
+        alert("fetchNotFirst");
+        updateFetchUrl();
+      }
+      document.getElementById("selectForTradinfview").style.display = "none";
+      document.getElementById("selectForYahooFinance").style.display = "block";
+      document.getElementById("tradingview-widget-container").style.display = "none";
+      document.getElementById("container").style.display = "block";
     }else{
+      alert("none");
       console.error('invalid source');
     }
+    currentSymbol = selectedSymbol;
+    currentSource = selectedSource;
   }
 });
 

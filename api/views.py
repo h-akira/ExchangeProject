@@ -102,8 +102,11 @@ def get_data_by_event(request, event_id, pair, rule):
 def get_latest_data_by_yf(request, pair, rule):
   # date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
   # end_datetime = datetime.datetime.combine(date, datetime.time(21,0))
-  end_datetime = datetime.datetime.utcnow()
-  end_datetime = pytz.utc.localize(end_datetime)
+  # end_datetime = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+  end_datetime = datetime.datetime.now() - datetime.timedelta(days=1)
+  end_datetime = pytz.timezone("Asia/Tokyo").localize(end_datetime)
+  # end_datetime = pytz.utc.localize(end_datetime)
+  # dt = pytz.timezone("Asia/Tokyo").localize(dt)
   if "D" in rule:
     days = 250
   elif "H" in rule:
@@ -115,6 +118,10 @@ def get_latest_data_by_yf(request, pair, rule):
     # yfinanceの制約で10分足等は取得できず1分足から変換する
     days = 7
   start_datetime = end_datetime - datetime.timedelta(days=days)
+  print("--------------------")
+  print(start_datetime)
+  print(end_datetime)
+  print("--------------------")
   data = _get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime, yf_must=True)
   return JsonResponse(data, safe=False)
 
@@ -162,7 +169,10 @@ def _get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_date
       ticker = pair
     else:
       ticker = f'{pair.replace("/","")}=X'
+    print(ticker)
     df = web.get_data_yahoo(tickers=ticker,start=start_datetime, end=end_datetime, interval=interval)
+    # df = web.get_data_yahoo(tickers=ticker,start=start_datetime, interval=interval)
+    print(df)
     # if df.empty:
       # return {"source": "Failed download by yahoo finance", "data": []}
     if df.index[0].tzinfo is None:
