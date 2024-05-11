@@ -116,36 +116,18 @@
   style="width: 100%; height: 600px;"
   class="content"
  ></div>
-{# <script> #}
-{#   if (currentSource == "yahoo finance") { #}
-{#     alert("yahoo finance"); #}
-{#     let FETCH_URL_DATA = "/api/get_latest_data_by_yf/"+currencyPair+"/1D/"; #}
-{#     document.getElementById("selectForTradinfview").style.display = "none"; #}
-{#     document.getElementById("selectForYahooFinance").style.display = "block"; #}
-{#     document.getElementById("tradingview-widget-container").style.display = "none"; #}
-{#     document.getElementById("container").style.display = "block"; #}
-{#   } else if (currentSource == "tradingview") { #}
-{#     alert("tradingview"); #}
-{#     let widget = createWidget(currentSymbol, currentStudy, currentHeight); #}
-{#     document.getElementById("selectForTradinfview").style.display = "block"; #}
-{#     document.getElementById("selectForYahooFinance").style.display = "none"; #}
-{#     document.getElementById("tradingview-widget-container").style.display = "block"; #}
-{#     document.getElementById("container").style.display = "none"; #}
-{#   } else { #}
-{#     aleart("none"); #}
-{#     document.getElementById("selectForTradinfview").style.display = "none"; #}
-{#     document.getElementById("selectForYahooFinance").style.display = "none"; #}
-{#     document.getElementById("tradingview-widget-container").style.display = "none"; #}
-{#     document.getElementById("container").style.display = "none"; #}
-{#   } #}
-{# </script> #}
 <div
   id="resizer"
   style="height: 10px; background: #ccc; cursor: ns-resize;">
 </div>
-
-{# chart.destroy(); #}
-
+{% if not charts %}
+<script>
+  document.getElementById("selectForTradinfview").style.display = "none";
+  document.getElementById("selectForYahooFinance").style.display = "none";
+  document.getElementById("tradingview-widget-container").style.display = "none";
+  document.getElementById("container").style.display = "none";
+</script>
+{% endif %}
 {% endblock content %}
 {% block extra_js %}
 <script

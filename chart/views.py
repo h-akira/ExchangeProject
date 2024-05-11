@@ -14,9 +14,12 @@ def index(request, category_number=1):
     if category_number > categories.aggregate(Max('id'))['id__max']:
       return redirect('chart:index')
   if categories.exists():
-    for i, category in enumerate(categories):
-      if i+1 == category_number:
+    for category in categories:
+      if category.id == category_number:
         charts = ChartTable.objects.filter(category=category).order_by('-priority')
+        break
+    else:
+      raise Exception
   else:
     charts = None
   context = {
