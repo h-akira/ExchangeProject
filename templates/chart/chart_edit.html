@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}
+{% if edit_type == 'create' %}
+新規作成
+{% elif edit_type == 'update' %}
+編集
+{% endif %}
+{% endblock title %}
+{% block content %}
+<h2 class="title is-2 has-text-centered">
+{% if edit_type == 'create' %}
+新規作成
+{% elif edit_type == 'update' %}
+編集
+{% endif %}
+</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="button is-link">登録</button>
+  {% if edit_type == 'update' %}
+  <a href="{% url 'chart:category_delete' object.id %}" class="button is-danger">削除</a>
+  {% endif %}
+  <a href="{% url 'chart:index' %}" class="button is-info">一覧に戻る</a>
+</form>
+<h4 class="title is-4 has-text-centered">
+  Symbolの例
+</h4>
+<div class="is-flex is-justify-content-center">
+  <div class="custom-table-container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="has-text-centered">種別</th>
+          <th class="has-text-centered">名前</th>
+          <th class="has-text-centered">Source</th>
+          <th class="has-text-centered">Symbol</th>
+          <th class="has-text-centered">メモ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="has-text-centered">日本株</td>
+          <td class="has-text-centered">NTT</td>
+          <td class="has-text-centered">TradingView</td>
+          <td class="has-text-centered">CAPITALCOM:9432</td>
+          <td class="has-text-centered">有名所しか対応してないかも</td>
+        </tr>
+        <tr>
+          <td class="has-text-centered">米国ETF</td>
+          <td class="has-text-centered">VOO</td>
+          <td class="has-text-centered">TradingView</td>
+          <td class="has-text-centered">AMEX:COO</td>
+          <td class="has-text-centered"></td>
+        </tr>
+        <tr>
+          <td class="has-text-centered">指数</td>
+          <td class="has-text-centered">日経平均</td>
+          <td class="has-text-centered">Yahoo Finance</td>
+          <td class="has-text-centered">^N225</td>
+          <td class="has-text-centered"></td>
+        </tr>
+        <tr>
+          <td class="has-text-centered">為替</td>
+          <td class="has-text-centered">ドル円</td>
+          <td class="has-text-centered">Yahoo Finance</td>
+          <td class="has-text-centered">USDJPY=X</td>
+          <td class="has-text-centered">日足がおかしい</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<h4 class="title is-4 has-text-centered">
+  参考リンク
+</h4>
+<div class="content">
+  <ul>
+    <li>
+      <a href="https://www.tradingview.com/widget-docs/widgets/charts/advanced-chart/" target="_blank" rel="noopener noreferrer">
+        TradingViewのWidget
+      </a>
+    </li>
+  </ul>
+</div>
+
+{% endblock content %}

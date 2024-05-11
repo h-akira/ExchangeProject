@@ -1,6 +1,6 @@
 // Description: This file contains the code for the trading view chart.
 let widget;
-let FETCH_URL_DATA
+let FETCH_URL_DATA;
 let fetchFirst = true;
 
 
@@ -11,7 +11,15 @@ function fetchChartData() {
     .then(response => {
       const data = response.data;
       const source = response.source;
-      document.getElementById('sourceDisplay').textContent = source;
+      if (source == "Yahoo Finance") {  // apiの仕様
+        document.getElementById('sourceDisplay').textContent = "Loaded from " + source;
+        document.getElementById("container").style.display = "block";
+      }else{
+        document.getElementById('sourceDisplay').textContent = source;
+        document.getElementById("container").style.display = "none";
+        alert(source)
+        // return alert(source);
+      }
       mainSeries.setData(data.map(item => ({
         time: item.time,
         open: item.open,
@@ -164,7 +172,7 @@ const bbDown3Series = chart.addLineSeries({
 const timeframeSelect = document.getElementById('timeframeSelect');
 
 function updateFetchUrl() {
-  document.getElementById('sourceDisplay').textContent = '...';
+  document.getElementById('sourceDisplay').textContent = 'Now Loading';
   const timeframe = timeframeSelect.value;
   FETCH_URL_DATA = `/api/get_latest_data_by_yf/${currentSymbol}/${timeframe}`;
   fetchChartData();
@@ -173,8 +181,7 @@ function updateFetchUrl() {
 timeframeSelect.addEventListener('change', updateFetchUrl);
 
 if (currentSource == "yahoo finance") {
-  // alert("yahoo finance");
-  FETCH_URL_DATA = "/api/get_latest_data_by_yf/"+currencyPair+"/1D/";
+  FETCH_URL_DATA = "/api/get_latest_data_by_yf/"+currentSymbol+"/1D/";
   fetchFirst = false;
   document.getElementById("selectForTradinfview").style.display = "none";
   document.getElementById("selectForYahooFinance").style.display = "block";
@@ -182,14 +189,13 @@ if (currentSource == "yahoo finance") {
   document.getElementById("container").style.display = "block";
   fetchChartData();
 } else if (currentSource == "tradingview") {
-  // alert("tradingview");
   widget = createWidget(currentSymbol, currentStudy, currentHeight);
   document.getElementById("selectForTradinfview").style.display = "block";
   document.getElementById("selectForYahooFinance").style.display = "none";
   document.getElementById("tradingview-widget-container").style.display = "block";
   document.getElementById("container").style.display = "none";
 } else {
-  // aleart("none");
+  aleart("none");
   document.getElementById("selectForTradinfview").style.display = "none";
   document.getElementById("selectForYahooFinance").style.display = "none";
   document.getElementById("tradingview-widget-container").style.display = "none";
@@ -203,41 +209,31 @@ document.getElementById('currencyPairSelect').addEventListener('change', (e) => 
   if (selectedSymbol != currentSymbol || selectedSource != currentSource) {
     if ( currentSource === 'tradingview'){
       widget.remove(); // 古いウィジェットを削除
-    // } else if ( currentSource === 'yahoo finance' ) {
-      // chart.destory();
     }
+    currentSymbol = selectedSymbol;
+    currentSource = selectedSource;
     if ( selectedSource == 'tradingview' ) {
-      alert("tradingview");
-      widget = createWidget(selectedSymbol, currentStudy, currentHeight); // 新しいウィジェットを作成
       document.getElementById("selectForTradinfview").style.display = "block";
       document.getElementById("selectForYahooFinance").style.display = "none";
       document.getElementById("tradingview-widget-container").style.display = "block";
       document.getElementById("container").style.display = "none";
-      // currentSymbol = selectedSymbol;
-      // currentSource = selectedSource;
+      widget = createWidget(selectedSymbol, currentStudy, currentHeight); // 新しいウィジェットを作成
     }else if ( selectedSource == 'yahoo finance' ) {
-      alert("yahoo finance");
-      FETCH_URL_DATA = "/api/get_latest_data_by_yf/"+selectedSymbol+"/1D/";
-      alert(FETCH_URL_DATA);
-      // chart.destory();
-      if (fetchFirst) {
-        fetchFirst = false;
-        alert("fetchFirst");
-        fetchChartData();
-      }else{
-        alert("fetchNotFirst");
-        updateFetchUrl();
-      }
       document.getElementById("selectForTradinfview").style.display = "none";
       document.getElementById("selectForYahooFinance").style.display = "block";
       document.getElementById("tradingview-widget-container").style.display = "none";
       document.getElementById("container").style.display = "block";
+      FETCH_URL_DATA = "/api/get_latest_data_by_yf/"+selectedSymbol+"/1D/";
+      if (fetchFirst) {
+        fetchFirst = false;
+        fetchChartData();
+      }else{
+        updateFetchUrl();
+      }
     }else{
       alert("none");
       console.error('invalid source');
     }
-    currentSymbol = selectedSymbol;
-    currentSource = selectedSource;
   }
 });
 

@@ -108,7 +108,7 @@ def get_latest_data_by_yf(request, pair, rule):
   # end_datetime = pytz.utc.localize(end_datetime)
   # dt = pytz.timezone("Asia/Tokyo").localize(dt)
   if "D" in rule:
-    days = 250
+    days = 500
   elif "H" in rule:
     days = 60
   elif rule in ["15T", "30T"]:
@@ -122,13 +122,13 @@ def get_latest_data_by_yf(request, pair, rule):
   print(start_datetime)
   print(end_datetime)
   print("--------------------")
-  data = _get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime, yf_must=True)
+  data = _get_dic(pair, rule, start_datetime=start_datetime, end_datetime=end_datetime, yf_must=True,auto_ticker=False)
   return JsonResponse(data, safe=False)
 
 ##############################
 ########## Function ##########
 ##############################
-def _get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datetime=None, yf_must=False):
+def _get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_datetime=None, yf_must=False, auto_ticker=True):
   # データベースにデータがあるかどうか確認，なければyfinanceから取得
   # 期間が指定されていない場合はyfinanceを使わず無条件でデータベースにあるものすべてを取得
   if "T" in rule:
@@ -165,16 +165,17 @@ def _get_dic(pair, rule, sma1=9, sma2=20, sma3=60, start_datetime=None, end_date
       interval = str(1)+interval[-1]
     else:
       resample = False
-    if "^" in pair:
-      ticker = pair
+    if auto_ticker:
+      if "^" in pair:
+        ticker = pair
+      else:
+        ticker = f'{pair.replace("/","")}=X'
     else:
-      ticker = f'{pair.replace("/","")}=X'
-    print(ticker)
+      ticker = pair
     df = web.get_data_yahoo(tickers=ticker,start=start_datetime, end=end_datetime, interval=interval)
     # df = web.get_data_yahoo(tickers=ticker,start=start_datetime, interval=interval)
-    print(df)
-    # if df.empty:
-      # return {"source": "Failed download by yahoo finance", "data": []}
+    if df.empty:
+      return {"source": "Failed download by yahoo finance", "data": []}
     if df.index[0].tzinfo is None:
       df.index = df.index.tz_localize('UTC')
     df.index = df.index.tz_convert('Asia/Tokyo')

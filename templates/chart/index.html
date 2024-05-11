@@ -17,11 +17,19 @@
       {{ category.name }}
     </a>
   {% endfor %}
+</p>
+<p>
   <a href="{% url 'chart:category_update' category_number %}" class="button is-success">
-    編集
+    選択中のカテゴリを編集
   </a>
   <a href="{% url 'chart:category_create' %}" class="button is-success">
-    追加
+    カテゴリ追加
+  </a>
+  <a href="{% url 'chart:chart_create' %}" class="button is-success">
+    チャートを作成
+  </a>
+  <a href="{% url 'chart:chart_settings' category_number %}" class="button is-success">
+    チャートをまとめて設定
   </a>
 </p>
 {% if charts %}
@@ -56,11 +64,11 @@
     <option value="15T">15分足</option>
     <option value="30T">30分足</option>
     <option value="1H">1時間足</option>
-    <option value="4H">4時間足</option>
+    {# <option value="4H">4時間足</option> #}
     <option value="1D" selected>日足</option>
   </select>
   SMA(9, 20, 60) and Bollinger Bands(20, 2 and 3),
-  Loading <span id="sourceDisplay">...</span>.
+  <span id="sourceDisplay">Now Loading</span>.
 </p>
 <p id="selectForTradinfview">
   <select id="indicatorSelect">

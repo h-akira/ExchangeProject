@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load boost %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/table.css' %}">
+{% endblock extra_css %}
+
+{% block title %}編集{% endblock title %}
+
+{% block content %}
+<form method="post">
+  <div class="padding-all">
+    <h2 class="title is-2 has-text-centered">
+      {{ category.name }}
+    </h2>
+    <div class="has-text-centered">
+      <button type="submit" name="action" value="end" class="button is-link">保存して終了</button>
+      <button type="submit" name="action" value="continue" class="button is-link">保存して継続</button>
+      <a href="{% url 'chart:category' category.id %}" class="button is-success">戻る</a>
+    </div>
+  </div>
+  {% csrf_token %}
+  {{ formset.management_form }}
+  <div class="is-flex is-justify-content-center">
+    <div class="custom-table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="has-text-centered">Name</th>
+            <th class="has-text-centered">Source</th>
+            <th class="has-text-centered">Symbol</th>
+            <th class="has-text-centered">Category</th>
+            <th class="has-text-centered">Priority</th>
+            <th class="has-text-centered">Operation</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form,chart in formset|zip:charts %}
+          <tr>
+            <td class="has-text-centered">
+              {{ form.id }}
+              {{ form.name }}
+            </td>
+            {# <td class="has-text-centered">{{ form.name }}</td> #}
+            <td class="has-text-centered">{{ form.source }}</td>
+            <td class="has-text-centered">{{ form.symbol }}</td>
+            <td class="has-text-centered">{{ form.category }}</td>
+            <td class="has-text-centered">{{ form.priority }}</td>
+            <td class="has-text-centered">
+              <a href="{% url 'chart:chart_delete' chart.id %}" class="button is-link is-small is-outlined">
+                削除
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+          {# <tr><td>hoge</td><td>hoge</td><td>hoge</td><td>hoge</td><td>hoge</td><td>hoge</td></tr> #}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</form>
+{# </div> #}
+{% endblock content %}
+
+{# {% block extra_js %} #}
+{# <script src="{% static 'js/edit_permission_set.js' %}"></script> #}
+{# {% endblock extra_js %} #}
